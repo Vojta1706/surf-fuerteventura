@@ -97,16 +97,15 @@ def deg_to_compass(deg):
 
 
 def table_rows(soup):
-    """Řádky předpovědní tabulky podle data-row-name; buňky rozbalené podle colspan."""
+    """Řádky předpovědní tabulky podle data-row; datové buňky (td) rozbalené podle colspan."""
     rows = {}
-    for tr in soup.select("tr[data-row-name]"):
-        name = tr.get("data-row-name")
+    for tr in soup.select("tr[data-row]"):
+        name = tr.get("data-row")
         if name in rows:
             continue
         cells = []
         for td in tr.find_all("td", recursive=False):
-            span = int(td.get("colspan") or 1)
-            cells.extend([td] * span)
+            cells.extend([td] * int(td.get("colspan") or 1))
         rows[name] = cells
     return rows
 
@@ -171,135 +170,101 @@ def parse_sea_temp(soup):
 
 
 def cell_rating(td):
-    for x in [td] + td.find_all(True):
-        for k in ("data-value", "data-rating", "alt", "title"):
-            v = x.get(k)
-            if isinstance(v, str) and re.fullmatch(r"\s*\d{1,2}\s*", v):
-                return int(v)
     v = num(text(td))
     return int(v) if v is not None and 0 <= v <= 10 else 0
 
 
-def swell_from_attr(td):
-    """surf-forecast ukládá swell do JSON atributu (data-swell-state)."""
-    for x in [td] + td.find_all(True):
-        raw = x.get("data-swell-state")
-        if raw:
-            try:
-                arr = json.loads(raw)
-                arr = [s for s in (arr if isinstance(arr, list) else [arr]) if isinstance(s, dict)]
-                if arr:
-                    return arr[0]
-            except ValueError:
-                pass
-    return None
-
-
-def cell_wave(td):
-    s = swell_from_attr(td) or {}
-    h = num(text(td))
-    if h is None and s.get("height") is not None:
-        h = float(s["height"])
-    d = s.get("letters") or compass(attrs_text(td))
-    if not d and s.get("angle") is not None:
-        d = deg_to_compass(float(s["angle"]) + 180)  # úhel ikony míří po směru vlny
-    p = float(s["period"]) if s.get("period") is not None else None
-    return h, d, p
+def cell_swell(td):
+    """Buňka Wave Height: výška (data-height), směr (písmena) a perioda (.forecast-table__swell-period)."""
+    icon = td.select_one("[data-height]")
+    h = num(icon.get("data-height")) if icon else None
+    if h is None:
+        h = num(text(td))
+    per = td.select_one(".forecast-table__swell-period")
+    p = num(text(per)) if per else None
+    return h, compass(text(td)), p
 
 
 def cell_wind(td):
-    w = None
-    for x in [td] + td.find_all(True):
-        for k in ("data-speed", "data-wind-speed"):
-            if x.get(k) and num(x.get(k)) is not None:
-                w = num(x.get(k))
-                break
-        if w is not None:
-            break
+    """Buňka Wind: rychlost, jak ji ukazuje surf-forecast (km/h), a směr písmeny."""
+    val = td.select_one(".wind-icon__val")
+    w = num(text(val)) if val else None
     if w is None:
-        w = num(text(td))
-    return w, compass(attrs_text(td))
+        icon = td.select_one("[data-speed]")
+        w = num(icon.get("data-speed")) if icon else num(text(td))
+    let = td.select_one(".wind-icon__letters")
+    return w, compass(text(let) if let else text(td))
 
 
 def parse_forecast(soup, today, days):
     rows = table_rows(soup)
-    need = ["days", "time", "wave-height", "periods", "wind"]
-    miss = [r for r in need if r not in rows]
+    miss = [r for r in ("days", "time", "swell", "wind") if r not in rows]
     if miss:
         debug_dump("chybí řádky " + ", ".join(miss), soup)
         fail("v tabulce chybí řádky " + ", ".join(miss))
     n = len(rows["time"])
     dates = []
-    for td in rows["days"][:n]:
-        dom = None
-        if td.get("data-date"):
-            try:
-                dates.append(dt.date.fromisoformat(td["data-date"][:10]))
-                continue
-            except ValueError:
-                pass
-        m = re.search(r"\b(\d{1,2})\b", text(td))
-        dom = int(m.group(1)) if m else None
-        dates.append(resolve_day(dom, today) if dom else None)
+    for td in rows["days"]:
+        try:
+            dates.append(dt.date.fromisoformat((td.get("data-date") or "")[:10]))
+        except ValueError:
+            m = re.search(r"\b(\d{1,2})\b", text(td))
+            dates.append(resolve_day(int(m.group(1)), today) if m else None)
     slots = []
     for i in range(n):
         d = dates[i] if i < len(dates) else None
         t = parse_time(text(rows["time"][i]))
         if not d or not t or d not in days or not ("06:00" <= t <= "20:00"):
             continue
-        h, sd, p_attr = cell_wave(rows["wave-height"][i])
-        p = num(text(rows["periods"][i])) or p_attr
+        h, sd, p = cell_swell(rows["swell"][i])
         w, wd = cell_wind(rows["wind"][i])
+        cell = lambda r: rows[r][i] if r in rows and i < len(rows[r]) else None
         slot = {"d": d.isoformat(), "t": t, "h": h, "sd": sd, "p": p,
-                "kj": num(text(rows["energy"][i])) if "energy" in rows and i < len(rows["energy"]) else None,
-                "w": w, "wd": wd,
-                "sf": cell_rating(rows["rating"][i]) if "rating" in rows and i < len(rows["rating"]) else 0}
+                "kj": num(text(cell("wave-energy"))) if cell("wave-energy") is not None else None,
+                "w": w, "wd": wd, "sf": cell_rating(cell("rating")) if cell("rating") is not None else 0}
         for k in ("p", "w", "kj"):
             if isinstance(slot[k], float) and slot[k].is_integer():
                 slot[k] = int(slot[k])
-        if "wind-state" in rows and i < len(rows["wind-state"]):
-            ws = text(rows["wind-state"][i]).lower().replace(" ", "")
-            ws = {"crossoff": "cross-off", "crosson": "cross-on"}.get(ws, ws)
+        if cell("wind-state") is not None:
+            ws = text(cell("wind-state")).lower().replace(" ", "")
+            ws = {"crossoff": "cross-off", "crosson": "cross-on", "off-shore": "off", "on-shore": "on"}.get(ws, ws)
             if ws in WS:
                 slot["ws"] = ws
         slots.append(slot)
     return slots
 
 
-TIDE_RE = re.compile(r"(\d{1,2}):(\d{2})\s*(am|pm)?\s*\(?\s*(-?\d+(?:\.\d+)?)\s*m", re.I)
+TIDE_RE = re.compile(r"(\d{1,2}):(\d{2})\s*(AM|PM)\s*(-?\d+(?:\.\d+)?)\s*m", re.I)
 
 
 def parse_tides(soup, today, last_day):
-    """Přílivy a odlivy z přílivové stránky: řádky tabulky s 'High'/'Low', časem a výškou."""
+    """Přílivová tabulka: řádek dnů (data-date, colspan) a řádky HIGH a LOW podle tabulky popisků."""
+    data = soup.select_one("table.tide-table__table")
+    labels = soup.select_one("table.tide-table__labels")
+    if not data or not labels:
+        return []
+    lab = [text(tr).upper() for tr in labels.find_all("tr")]
+    trs = data.find_all("tr")
+    cols = []
+    for td in trs[0].find_all(["td", "th"]):
+        cols.extend([td.get("data-date")] * int(td.get("colspan") or 1))
     out = []
-    cur_date = None
-    for el in soup.find_all(["tr", "h2", "h3", "h4", "caption", "th"]):
-        t = text(el)
-        m = re.search(r"(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+(\d{1,2})", t)
-        if m and el.name != "tr":
-            cur_date = resolve_day(int(m.group(2)), today)
+    for idx, kind in ((next((i for i, s in enumerate(lab) if s.startswith("HIGH")), None), "H"),
+                      (next((i for i, s in enumerate(lab) if s.startswith("LOW")), None), "L")):
+        if idx is None or idx >= len(trs):
             continue
-        if el.name != "tr":
-            continue
-        if m:
-            cur_date = resolve_day(int(m.group(2)), today)
-        kind = "H" if re.search(r"\bhigh\b", t, re.I) else "L" if re.search(r"\blow\b", t, re.I) else None
-        tm = TIDE_RE.search(t)
-        if not kind or not tm or not cur_date:
-            continue
-        h, mi = int(tm.group(1)), int(tm.group(2))
-        ap = (tm.group(3) or "").lower()
-        if ap == "pm" and h != 12:
-            h += 12
-        if ap == "am" and h == 12:
-            h = 0
-        out.append({"d": cur_date.isoformat(), "t": f"{h:02d}:{mi:02d}", "k": kind, "m": float(tm.group(4))})
-    seen, res = set(), []
-    for e in sorted(out, key=lambda e: (e["d"], e["t"])):
-        if (e["d"], e["t"]) not in seen and today.isoformat() <= e["d"] <= last_day.isoformat():
-            seen.add((e["d"], e["t"]))
-            res.append(e)
-    return res
+        col = 0
+        for td in trs[idx].find_all(["td", "th"]):
+            span = int(td.get("colspan") or 1)
+            d = cols[col] if col < len(cols) else None
+            col += span
+            for m in TIDE_RE.finditer(text(td)):
+                if not d:
+                    continue
+                h = int(m.group(1)) % 12 + (12 if m.group(3).upper() == "PM" else 0)
+                out.append({"d": d, "t": f"{h:02d}:{m.group(2)}", "k": kind, "m": float(m.group(4))})
+    out = [e for e in out if today.isoformat() <= e["d"] <= last_day.isoformat()]
+    return sorted({(e["d"], e["t"]): e for e in out}.values(), key=lambda e: (e["d"], e["t"]))
 
 
 def validate(d):
@@ -367,7 +332,7 @@ def main():
         soup = get(BASE + slug + "/tides/latest")
         data["tides"][st] = parse_tides(soup, today, last_day)
         if DEBUG or len(data["tides"][st]) < 6:
-            print(f"===== přílivy {st}: {len(data['tides'][st])}", json.dumps(data["tides"][st][:4]))
+            print(f"===== přílivy {st}: {len(data['tides'][st])}", json.dumps(data["tides"][st][:6]))
             if len(data["tides"][st]) < 6:
                 for tr in soup.find_all("tr")[:25]:
                     print("  tr:", text(tr)[:160])

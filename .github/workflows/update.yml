@@ -50,6 +50,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          # Úklid po ladění: dočasná větev debug-dump se smaže, pokud existuje.
+          if git ls-remote --exit-code --heads origin debug-dump >/dev/null; then git push origin --delete debug-dump || true; fi
           git add data/forecast.json
           if git diff --cached --quiet; then echo "Beze změny."; exit 0; fi
           git commit -m "Předpověď $(python3 -c 'import json;print(json.load(open("data/forecast.json"))["issued"])')"
