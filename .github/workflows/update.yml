@@ -1,0 +1,43 @@
+name: Aktualizace předpovědi
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # každých 15 minut; když surf-forecast nemá nic nového, skončí hned
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "normal, force (uložit i bez nové předpovědi) nebo debug (jen vypsat, co se přečetlo)"
+        default: normal
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet requests beautifulsoup4
+      - name: Stáhnout předpověď
+        run: |
+          case "${{ inputs.mode }}" in
+            force) python3 scripts/update.py --force ;;
+            debug) python3 scripts/update.py --debug ;;
+            *) python3 scripts/update.py ;;
+          esac
+      - name: Uložit nová data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add data/forecast.json
+          if git diff --cached --quiet; then echo "Beze změny."; exit 0; fi
+          git commit -m "Předpověď $(python3 -c 'import json;print(json.load(open("data/forecast.json"))["issued"])')"
+          git push

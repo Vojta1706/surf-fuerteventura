@@ -1,0 +1,2013 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0}</style>
+</head>
+<body>
+<title>Surf Fuerteventura</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: an Atlantic "hero" band with drifting swell lines answers "where and when today" (the best bet, then
+   cards per coast that overlap its lower edge); then a 3-day heatmap grouped by coast, a sticky two-level switcher
+   (coast, then spot), and per spot: key facts, one shared legend, a card per day
+   (when to go → tide/daylight strip → surf table), and finally the spot guide. */
+:root{
+  --bg:#EDF2F1; --surface:#FFFFFF; --surface-2:#F4F7F6; --ink:#13222B; --muted:#5B6D74; --line:#D8E1E0;
+  --sea:#0C6C76; --sea-tint:#DBEEEE; --land:#EAD7AE; --coast:#A9732B; --wind:#1C8455;
+  --hero-1:#082636; --hero-2:#0E4A5E; --hero-ink:#F1F8F8; --hero-muted:#A4C3C9; --hero-hi:#7FD6D8; --hero-lo:#E8C27E;
+  --tab-on-bg:#0B2F42; --tab-on-fg:#F1F8F8;
+  --night:rgba(8,38,54,.17); --twilight:rgba(8,38,54,.07);
+  --great-bg:#1C8455; --great-fg:#FFFFFF; --ok-bg:#F2C14E; --ok-fg:#2C2105; --poor-bg:#E0E7E6; --poor-fg:#4A5A60; --poor-bar:#AEBDBF; --dark-bg:#2A3B44; --dark-fg:#DCE6E9;
+  --good:#1C8455; --warn:#8E5F00; --bad:#B4443A;
+  --good-tint:#DDF1E6; --warn-tint:#FBF0D2; --bad-tint:#F8E1DE;
+  --shadow:0 1px 2px rgba(8,38,54,.06),0 10px 28px rgba(8,38,54,.08);
+  --display:"Big Shoulders Display","Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0A141A; --surface:#101E26; --surface-2:#0D1920; --ink:#E5EEF0; --muted:#93A7AE; --line:#21343D;
+  --sea:#4FC4C6; --sea-tint:#11303A; --land:#433728; --coast:#D2A45E; --wind:#4BC489;
+  --hero-1:#051A25; --hero-2:#0A3646; --hero-ink:#EAF4F5; --hero-muted:#8FB1B8;
+  --tab-on-bg:#4FC4C6; --tab-on-fg:#04161D;
+  --night:rgba(0,0,0,.45); --twilight:rgba(0,0,0,.22);
+  --great-bg:#35B377; --great-fg:#03200F; --ok-bg:#E6B347; --ok-fg:#231800; --poor-bg:#22323A; --poor-fg:#A6B6BB; --poor-bar:#3E5058; --dark-bg:#060D11; --dark-fg:#7F9298;
+  --good:#4BC489; --warn:#E6B347; --bad:#EE8072;
+  --good-tint:#123227; --warn-tint:#33290F; --bad-tint:#3A1D1A;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A141A; --surface:#101E26; --surface-2:#0D1920; --ink:#E5EEF0; --muted:#93A7AE; --line:#21343D;
+  --sea:#4FC4C6; --sea-tint:#11303A; --land:#433728; --coast:#D2A45E; --wind:#4BC489;
+  --hero-1:#051A25; --hero-2:#0A3646; --hero-ink:#EAF4F5; --hero-muted:#8FB1B8;
+  --tab-on-bg:#4FC4C6; --tab-on-fg:#04161D;
+  --night:rgba(0,0,0,.45); --twilight:rgba(0,0,0,.22);
+  --great-bg:#35B377; --great-fg:#03200F; --ok-bg:#E6B347; --ok-fg:#231800; --poor-bg:#22323A; --poor-fg:#A6B6BB; --poor-bar:#3E5058; --dark-bg:#060D11; --dark-fg:#7F9298;
+  --good:#4BC489; --warn:#E6B347; --bad:#EE8072;
+  --good-tint:#123227; --warn-tint:#33290F; --bad-tint:#3A1D1A;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.35); color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+h1,h2,h3,h4{margin:0;font-family:var(--display);text-wrap:balance}
+p{margin:0}
+a{color:var(--sea)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:2px solid var(--sea);outline-offset:2px;border-radius:6px}
+.ic{width:15px;height:15px;flex:none;vertical-align:-2px}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;overflow:hidden;color:var(--hero-ink);background:radial-gradient(130% 150% at 88% -20%,var(--hero-2) 0%,var(--hero-1) 62%)}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-in{position:relative;max-width:980px;margin:0 auto;padding-block:30px 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--hero-muted)}
+.hero-top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:34px}
+/* Language switch: two small segments on the hero */
+.lang{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);flex:none}
+.lang button{all:unset;box-sizing:border-box;cursor:pointer;min-width:40px;padding:6px 10px;border-radius:999px;text-align:center;font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.12em;line-height:1.2;color:var(--hero-muted);transition:background .15s ease,color .15s ease}
+.lang button:hover{color:var(--hero-ink)}
+.lang button[aria-pressed="true"]{background:var(--hero-ink);color:var(--hero-1)}
+.lang button:focus-visible{outline:2px solid var(--hero-ink);outline-offset:2px}
+.hero h1{font-weight:900;font-size:clamp(3.1rem,11vw,5.6rem);line-height:.84;text-transform:uppercase;letter-spacing:.005em}
+.hero-spots{font-family:var(--display);font-weight:700;font-size:1.2rem;letter-spacing:.06em;text-transform:uppercase;color:var(--hero-muted);margin-top:6px}
+.hero .meta{font-family:var(--mono);font-size:.74rem;color:var(--hero-muted);margin-top:8px;max-width:72ch}
+.nw{white-space:nowrap}
+.stale{margin-top:10px;padding:10px 14px;border-radius:12px;background:var(--ok-bg);color:var(--ok-fg);font-weight:600;max-width:60ch}
+.hero-h{margin-top:22px;font-weight:800;font-size:1.45rem;letter-spacing:.06em;text-transform:uppercase}
+/* Today's tides: the first thing in the hero */
+.htide{margin-top:18px;display:flex;flex-direction:column;gap:8px;max-width:640px}
+.htide-top{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px}
+.htide-h{font-family:var(--display);font-weight:800;font-size:1.3rem;letter-spacing:.06em;text-transform:uppercase;line-height:1.1}
+.htide-now{font-size:.92rem;font-weight:600;color:var(--hero-ink)}
+.htide-row{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));border:1px solid rgba(255,255,255,.18);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.07)}
+.htc{display:flex;flex-direction:column;align-items:center;gap:3px;padding:11px 4px;min-width:0;text-align:center}
+.htc+.htc{border-left:1px solid rgba(255,255,255,.14)}
+.htc .tk{color:var(--hero-muted)}
+.htc.hi .tri{color:var(--hero-hi)}
+.htc.lo .tri{color:var(--hero-lo)}
+.htc b{font-family:var(--display);font-weight:800;font-size:clamp(1.3rem,6vw,1.9rem);line-height:1;letter-spacing:.01em;font-variant-numeric:tabular-nums}
+.htc small{font-family:var(--mono);font-size:.72rem;color:var(--hero-muted)}
+.htc.past{opacity:.45}
+.htc.next{background:rgba(255,255,255,.12);box-shadow:inset 0 -3px 0 var(--hero-ink)}
+.htide-f{font-size:.74rem;color:var(--hero-muted)}
+.pick{margin-top:12px}
+.pickbtn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:12px;max-width:100%;padding:10px 16px 10px 10px;border-radius:16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);color:var(--hero-ink);transition:background .15s ease}
+.pickbtn:hover{background:rgba(255,255,255,.12)}
+.pickbtn:focus-visible{outline:2px solid var(--hero-ink);outline-offset:2px}
+.pickbtn .score{font-size:1.7rem;border-radius:12px;flex:none}
+.pick-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pick-l{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--hero-muted)}
+.pick-m{font-family:var(--display);font-weight:800;font-size:1.4rem;line-height:1.05;letter-spacing:.01em}
+.pick-m b{font-weight:900;text-transform:uppercase;letter-spacing:.02em}
+.pick-m .num{font-family:var(--display);white-space:nowrap}
+.pick-s{font-size:.78rem;color:var(--hero-muted)}
+.pick-go{font-size:1.4rem;line-height:1;color:var(--hero-muted);margin-left:2px;flex:none}
+
+/* ---------- Page ---------- */
+.wrap{max-width:980px;margin:0 auto;padding-block:0 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:30px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+.sect-h{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:800;font-size:1.2rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.sect-h::after{content:"";flex:1;height:1px;background:var(--line)}
+.lk{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.empty{padding:18px;border:1px dashed var(--line);border-radius:14px;color:var(--muted)}
+
+/* Score badge */
+.score{display:inline-flex;align-items:center;justify-content:center;min-width:2.1em;height:2em;padding:0 .35em;border-radius:10px;font-family:var(--display);font-weight:900;font-size:1.3rem;line-height:1}
+.score.great{background:var(--great-bg);color:var(--great-fg)}
+.score.ok{background:var(--ok-bg);color:var(--ok-fg)}
+.score.poor{background:var(--poor-bg);color:var(--poor-fg)}
+.score.dark{background:var(--dark-bg);color:var(--dark-fg)}
+.score.sm{font-size:1.05rem;border-radius:8px}
+
+/* ---------- Today cards ---------- */
+.today{margin-top:-70px;position:relative}
+.best{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 12px}
+.rgroup{grid-column:span var(--n);display:flex;flex-direction:column;gap:9px;min-width:0}
+.rhead{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 10px;padding-left:2px}
+.rname{font-weight:900;font-size:1.25rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);line-height:1}
+.rsub{font-family:var(--body);font-weight:500;font-size:.8rem;color:var(--muted)}
+.rgroup:first-child .rname{color:var(--hero-ink)}
+.rgroup:first-child .rsub{color:var(--hero-muted)}
+.rcards{flex:1;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:12px}
+.bcard{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:10px;padding:18px 16px;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);min-width:0;transition:transform .15s ease,box-shadow .15s ease}
+.bcard:hover{transform:translateY(-2px)}
+.bcard:focus-visible{outline:2px solid var(--sea);outline-offset:3px}
+.bname{font-family:var(--display);font-weight:900;font-size:1.5rem;text-transform:uppercase;letter-spacing:.02em;line-height:1}
+.bline{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.bcard .score{font-size:1.9rem;border-radius:13px}
+.bwhen{font-family:var(--display);font-weight:800;font-size:1.75rem;line-height:1;letter-spacing:.01em}
+.bverdict{font-size:.8rem;color:var(--muted);font-weight:600;flex-basis:100%;margin-top:-4px}
+.brange{font-size:.86rem;font-weight:600}
+.bcond{font-size:.84rem;color:var(--muted)}
+.weakwhy{color:var(--ink)}
+.weakwhy b{font-size:inherit;font-weight:700}
+.bcmp{font-size:.8rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:9px}
+.bnext{display:flex;flex-direction:column;gap:2px;font-size:.88rem;background:var(--sea-tint);border-radius:12px;padding:9px 12px}
+.bnext .lk{font-size:.62rem}
+.bnext b{font-weight:700}
+
+/* Comment */
+.notebox{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:baseline;padding:16px 20px}
+.note{max-width:74ch}
+
+/* ---------- 3-day heatmap ---------- */
+.mxcard{padding:18px 20px}
+.mxw{display:flex;gap:22px}
+.mx{border-collapse:separate;border-spacing:4px 4px;font-family:var(--mono);font-size:.76rem}
+.mx th{font-weight:500;color:var(--muted);padding:0}
+.mx .dh{font-family:var(--display);font-size:1.1rem;font-weight:800;color:var(--ink);text-align:left;padding-left:4px;text-transform:uppercase;letter-spacing:.04em}
+.mx .th{text-align:center}
+.mx .th.now{color:var(--bad);font-weight:600}
+.mx .rh{text-align:left;font-family:var(--display);font-size:1.05rem;font-weight:700;color:var(--ink);padding-right:10px;white-space:nowrap;text-transform:uppercase;letter-spacing:.02em}
+.mxday:not(:first-child) .rh,.mxday:not(:first-child) .corner{display:none}
+.mx .rgrow th,.mx .rgrow td{height:26px;padding:10px 0 0;vertical-align:bottom}
+.mx tbody:first-of-type .rgrow th,.mx tbody:first-of-type .rgrow td{height:18px;padding-top:2px}
+.mx th.rgh{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--sea)}
+.mc{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;font-weight:600;font-family:var(--display);font-size:1.15rem;font-variant-numeric:tabular-nums;transition:transform .12s ease}
+.mc:hover{transform:scale(1.08)}
+.mc.great{background:var(--great-bg);color:var(--great-fg)}
+.mc.ok{background:var(--ok-bg);color:var(--ok-fg)}
+.mc.poor{background:var(--poor-bg);color:var(--poor-fg)}
+.mc.dark,.hatch{background:repeating-linear-gradient(135deg,var(--dark-bg) 0 2px,var(--night) 2px 6px)}
+.mc.past{opacity:.38}
+.mc.none{cursor:default;border:1px dashed var(--line)}
+.mx td.now .mc{box-shadow:0 0 0 2px var(--bad)}
+.mc:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+.keys{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.78rem;color:var(--muted);margin-top:12px}
+.keys span{display:inline-flex;align-items:center;gap:6px}
+.keys i{display:inline-block;width:13px;height:13px;border-radius:4px;background:var(--c)}
+.keys i.hatch{background:repeating-linear-gradient(135deg,var(--dark-bg) 0 2px,var(--night) 2px 6px)}
+
+/* ---------- Spot switcher ---------- */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;display:flex;flex-direction:column;gap:4px;padding:5px;background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+.rtabs,.stabs{display:flex;gap:4px;min-width:0}
+.rtabs button{all:unset;box-sizing:border-box;cursor:pointer;flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:7px 8px;border-radius:999px;font-family:var(--mono);font-weight:600;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.rtabs button[aria-selected="true"]{background:var(--sea-tint);color:var(--sea)}
+.rtabs .cnt{font-size:.62rem;letter-spacing:0;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.rtabs button[aria-selected="true"] .cnt{border-color:var(--sea);color:var(--sea)}
+.stabs button{all:unset;box-sizing:border-box;cursor:pointer;flex:1 1 0;min-width:0;text-align:center;padding:10px 6px;border-radius:999px;font-family:var(--display);font-weight:800;font-size:1.15rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);line-height:1.05}
+.stabs button[aria-selected="true"]{background:var(--tab-on-bg);color:var(--tab-on-fg)}
+.tabs button:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+@media (min-width:721px){
+  .tabs{flex-direction:row;align-items:center;border-radius:999px}
+  .rtabs{flex:0 0 auto;padding-right:6px;border-right:1px solid var(--line)}
+  .rtabs button{flex:0 0 auto;padding:10px 12px}
+  .stabs{flex:1}
+}
+
+/* ---------- Spot panel ---------- */
+#panel{display:flex;flex-direction:column;gap:22px}
+.spothead{display:flex;flex-direction:column;gap:12px}
+.spothead h2{font-weight:900;font-size:clamp(2.4rem,8vw,3.6rem);line-height:.88;text-transform:uppercase}
+.spot-eyebrow{font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sea);margin-bottom:-4px}
+.chips,.links{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 9px;border-radius:99px;background:var(--sea-tint);color:var(--sea)}
+.links a{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:600;padding:6px 12px;border:1px solid var(--line);border-radius:99px;text-decoration:none;background:var(--surface);color:var(--ink)}
+.links a:hover{border-color:var(--sea);color:var(--sea)}
+.ideal{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.ideal>div{display:flex;flex-direction:column;gap:4px;padding:14px 16px;min-width:0;background:var(--surface)}
+.ideal .iw{grid-row:span 3;gap:8px}
+.ideal>div>b{font-weight:600;font-size:.92rem}
+.itbl{width:100%;border-collapse:separate;border-spacing:0;font-size:.9rem}
+.itbl th,.itbl td{padding:8px 10px;text-align:left;vertical-align:top;border-top:1px solid var(--line)}
+.itbl thead th,.itbl thead td{border-top:0;padding:6px 10px}
+.itbl tbody th{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;white-space:nowrap;padding-left:0;width:1%}
+.itbl td b{display:block;font-family:var(--mono);font-weight:600;font-size:.98rem;line-height:1.3}
+.itbl td small{display:block;font-size:.74rem;color:var(--muted);margin-top:1px}
+.itbl .on{background:var(--sea-tint)}
+.itbl thead .on{border-radius:10px 10px 0 0}
+.itbl tbody tr:last-child .on{border-radius:0 0 10px 10px}
+.itbl td.na{color:var(--muted);font-style:italic}
+.itbl .pkrow th,.itbl .pkrow td{padding:12px 10px 2px 0}
+.itbl .pkrow th{font-family:var(--display);font-weight:800;font-size:1rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
+.itbl tbody .pkrow:first-child th,.itbl tbody .pkrow:first-child td{padding-top:4px;border-top:0}
+.itbl tr.pkrow+tr th,.itbl tr.pkrow+tr td{border-top:0}
+.itbl thead th{font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);line-height:1.3}
+.itbl thead th.on{color:var(--sea)}
+
+/* Shared legend */
+.legend{padding:14px 18px;display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.8rem;color:var(--muted);align-items:center}
+.legend>span{display:inline-flex;align-items:center;gap:7px}
+.sw{display:inline-block;width:20px;height:5px;border-radius:3px;background:var(--c);flex:none}
+.sw.bar{width:30px;height:8px;border-radius:2px;background:linear-gradient(90deg,var(--poor-bar) 0 33%,var(--ok-bg) 33% 66%,var(--great-bg) 66%)}
+.sw.outline{width:20px;height:9px;background:transparent;border:2px solid var(--ink);border-radius:2px}
+.sw.shade{width:16px;height:12px;border-radius:3px;background:var(--night)}
+.sw.nowl{width:2px;height:13px;border-radius:1px;background:var(--bad)}
+.sw.ws{width:14px;height:12px;border-radius:3px}
+
+/* Day cards */
+.fc{display:flex;flex-direction:column;gap:18px}
+.day{padding:20px;display:flex;flex-direction:column;gap:14px;scroll-margin-top:76px}
+.dayhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px}
+.dayhead h3{display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.85rem;line-height:1;text-transform:capitalize}
+.rel{font-family:var(--mono);font-weight:600;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;background:var(--tab-on-bg);color:var(--tab-on-fg);padding:5px 9px;border-radius:999px}
+.daymeta{display:flex;flex-wrap:wrap;gap:6px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;padding:4px 9px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);white-space:nowrap}
+.tides{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface-2)}
+.tcell{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 4px;text-align:center;min-width:0}
+.tcell+.tcell{border-left:1px solid var(--line)}
+.tk{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:.66rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.tcell b{font-family:var(--mono);font-weight:600;font-size:1.05rem;line-height:1.1}
+.tcell .tri{font-size:.7rem}
+.tcell.hi .tri{color:var(--sea)}
+.tcell.lo .tri{color:var(--coast)}
+.tcell.night{opacity:.45}
+
+/* When to go */
+.go{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:start;background:var(--surface-2);border-radius:16px;padding:14px 16px}
+.go .lk{padding-top:8px}
+.go ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.go li{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"s b" ". c" ". w";gap:8px 14px;align-items:start;padding:14px 0}
+.go li>.score{grid-area:s}
+.go li>.wb{grid-area:b}
+.go li>.cond{grid-area:c}
+.go li>.wwhy{grid-area:w}
+.go li:first-child{padding-top:2px}
+.go li:last-child{padding-bottom:2px}
+.go li+li{border-top:1px solid var(--line)}
+.go li .score{font-size:1.5rem}
+.wb{display:flex;flex-direction:column;gap:7px;min-width:0;padding-top:3px}
+.whead{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px}
+.wtime{font-family:var(--display);font-weight:800;font-size:1.6rem;line-height:1;letter-spacing:.01em}
+.wtag{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--muted);white-space:nowrap}
+.wtag.top{background:var(--great-bg);border-color:transparent;color:var(--great-fg)}
+.wrange{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 8px;font-size:.88rem}
+.wl{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.wrange b{font-family:var(--mono);font-weight:600}
+.wq{font-size:.8rem;color:var(--muted)}
+.wwhy{font-size:.84rem;color:var(--ink)}
+.go li.over{opacity:.5}
+/* Condition chips (also in the today cards) */
+.cond{display:flex;flex-direction:column;gap:5px;min-width:0}
+.crow{display:flex;flex-wrap:wrap;gap:4px}
+.cc{display:inline-flex;align-items:center;gap:4px;font-size:.78rem;line-height:1.2;padding:4px 8px 4px 6px;border-radius:99px;background:var(--surface);border:1px solid var(--line);color:var(--ink);white-space:nowrap}
+.bcard .cc{font-size:.72rem;padding:3px 7px 3px 5px}
+.cc .ic{width:13px;height:13px;color:var(--muted)}
+.cc.good{background:var(--good-tint);border-color:transparent}
+.cc.ok{background:var(--warn-tint);border-color:transparent}
+.cc.bad{background:var(--bad-tint);border-color:transparent}
+.go p{padding-top:6px;color:var(--muted)}
+.go.none{background:transparent;border:1px dashed var(--line)}
+.cmp{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;font-size:.84rem;padding:0 16px;align-items:baseline}
+.cmp b{font-weight:600}
+
+/* Tide + daylight strip */
+.tc{display:flex;flex-direction:column;gap:2px}
+.tc-plot{position:relative;height:96px;border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.tc-plot svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.tc-dot{position:absolute;width:11px;height:11px;margin:-6px 0 0 -6px;border-radius:50%;border:2px solid var(--surface);box-sizing:content-box}
+.tc-dot.great{background:var(--great-bg)}.tc-dot.ok{background:var(--ok-bg)}.tc-dot.poor{background:var(--poor-fg)}.tc-dot.dark{background:var(--dark-bg)}
+.tc-axis{position:relative;height:16px;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.tc-axis span{position:absolute;transform:translateX(-50%)}
+.tc-axis span:first-child{transform:none}
+.tc-axis span:last-child{transform:translateX(-100%)}
+
+/* Surf table (time in columns, like surf-forecast) */
+.tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:.86rem;min-width:300px}
+.tbl th,.tbl td{padding:7px 4px;text-align:center;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child th,.tbl tr:last-child td{border-bottom:0}
+.tbl .lab{text-align:left;font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap;padding-left:0;width:64px}
+.tcol{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;padding:4px 0;border-radius:10px}
+.tcol:hover{background:var(--surface-2)}
+.tcol:focus-visible{outline:2px solid var(--sea);outline-offset:1px}
+.tcol .tm{font-family:var(--mono);font-weight:600;font-size:.84rem}
+.tcol.sel{background:var(--sea-tint)}
+.tcol.top{box-shadow:inset 0 0 0 2px var(--great-bg)}
+.tag{font-family:var(--mono);font-size:.58rem;letter-spacing:.06em;text-transform:uppercase;padding:1px 5px;border-radius:99px;line-height:1.4}
+.tag.now{background:var(--bad);color:#fff}
+.tag.dark{background:var(--dark-bg);color:var(--dark-fg)}
+.tag.tw{border:1px solid var(--muted);color:var(--muted)}
+.tbl .past{opacity:.45}
+.tbl .isdark{opacity:.55}
+.tbl .v{font-family:var(--mono);font-weight:600;font-size:.95rem}
+.tbl .u{font-size:.7rem;color:var(--muted)}
+.tbl small{display:block;font-size:.68rem;color:var(--muted);line-height:1.2}
+.cellwrap{display:inline-flex;flex-direction:column;align-items:center;gap:1px}
+.arr{width:16px;height:16px;color:var(--ink)}
+.kjbar{display:block;width:40px;height:4px;border-radius:3px;background:var(--line);margin:3px auto 0;position:relative;overflow:hidden}
+.kjbar::after{content:"";position:absolute;inset:0 auto 0 0;width:calc(var(--k) * 100%);background:var(--sea);border-radius:3px}
+.ws,.fit{border-radius:10px}
+.wst{display:block;font-size:.72rem;font-weight:600;line-height:1.15;hyphens:manual}
+.fit.good{background:var(--good-tint)}
+.fit.ok{background:var(--warn-tint)}
+.fit.bad{background:var(--bad-tint)}
+.ws.off,.ws.crossoff,.ws.glassy{background:var(--good-tint)}
+.ws.cross{background:var(--warn-tint)}
+.ws.crosson,.ws.on{background:var(--bad-tint)}
+.ph{font-family:var(--mono);font-size:.66rem;display:block}
+.ph.good{color:var(--good);font-weight:600}
+.ph.bad{color:var(--bad);font-weight:600}
+.tdir{font-weight:700;font-size:1.1rem;line-height:1}
+.tdir.up{color:var(--sea)}
+.tdir.down{color:var(--coast)}
+.pk{display:block;font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:2px}
+
+/* Why panel under the table */
+.why{background:var(--surface-2);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.why-h{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.why-h b{font-family:var(--display);font-weight:800;font-size:1.2rem}
+.why-x{all:unset;cursor:pointer;font-size:.8rem;color:var(--muted);padding:2px 8px;border-radius:8px}
+.why-x:hover{background:var(--line)}
+.why ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px;font-size:.84rem}
+.why li{display:flex;gap:8px;align-items:baseline}
+.fd{width:8px;height:8px;border-radius:50%;flex:none;transform:translateY(-1px)}
+.why li.good .fd{background:var(--good)}.why li.ok .fd{background:var(--warn)}.why li.bad .fd{background:var(--bad)}
+.why .meta{font-family:var(--mono);font-size:.74rem;color:var(--muted)}
+
+/* Spot guide */
+.guide{padding:20px;display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:24px;align-items:start}
+.site{margin:0;display:flex;flex-direction:column;gap:10px}
+.card-h{font-family:var(--display);font-weight:800;font-size:1.15rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.dg{width:100%;max-width:300px;height:auto;display:block}
+.dg-card{font-family:var(--mono);font-size:13px;font-weight:600;fill:var(--muted)}
+.dg-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.16em;font-weight:600}
+.dg-lbl.sea{fill:var(--sea)}
+.dg-lbl.land{fill:var(--coast)}
+.dg-legend{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;font-size:.84rem}
+.dg-legend li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px;align-items:start}
+.dg-legend svg{width:28px;height:18px;margin-top:1px}
+.facts{display:flex;flex-direction:column;gap:16px;min-width:0}
+.tidebox{background:var(--sea-tint);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.tidebox .card-h{color:var(--sea)}
+.tidebox ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px}
+.wins{display:flex;flex-wrap:wrap;gap:2px 14px;margin-top:4px;font-size:.84rem}
+.wins>span{white-space:nowrap}
+.wins .wl{flex-basis:100%;font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fine{font-size:.8rem;color:var(--muted)}
+dl{margin:0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:8px 16px}
+dt{font-family:var(--mono);font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+dd{margin:0}
+
+footer{display:flex;flex-direction:column;gap:10px;font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:18px}
+footer p{max-width:78ch}
+
+@media (max-width:720px){
+  .best{grid-template-columns:1fr}
+  .rgroup{grid-column:auto}
+  .rcards{grid-template-columns:1fr}
+  .ideal{grid-template-columns:1fr}
+  .ideal .iw{grid-row:auto}
+  .guide{grid-template-columns:1fr}
+  .dg{max-width:280px;margin:0 auto}
+  .mxw{flex-direction:column;gap:12px}
+  .mxday:not(:first-child) .rh,.mxday:not(:first-child) .corner{display:table-cell}
+  .why ul{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  .hero-in{padding-block:24px 92px}
+  .stabs button{font-size:1.02rem;padding:10px 2px;white-space:normal}
+  .rtabs button{letter-spacing:.1em;padding:7px 4px}
+  .pickbtn{padding:9px 12px 9px 9px;gap:10px}
+  .itbl th,.itbl td{padding:7px 6px}
+  .itbl td b{font-size:.9rem}
+  .pick-m{font-size:1.25rem}
+  .day{padding:14px 10px}
+  .go{grid-template-columns:1fr;gap:8px;padding:12px 10px}
+  .cc{font-size:.76rem}
+  .go li{grid-template-areas:"s b" "c c" "w w";gap:10px 12px}
+  .go .lk{padding-top:0}
+  .cmp{grid-template-columns:1fr;gap:2px;padding:0 4px}
+  .tbl{font-size:.8rem}
+  .tbl .lab{width:48px;font-size:.6rem;letter-spacing:.04em}
+  .tbl th,.tbl td{padding:6px 2px}
+  .tcol .tm{font-size:.78rem}
+  .mxcard{padding:14px 12px}
+  .pill{font-size:.72rem;padding:3px 8px;gap:4px}
+  .tcell{padding:8px 2px}
+  .tk{font-size:.6rem;letter-spacing:.06em;gap:3px}
+  .tcell b{font-size:.98rem}
+  .daymeta{gap:5px}
+  .mc{width:32px;height:32px}
+  .notebox{grid-template-columns:1fr;gap:6px;padding:14px 16px}
+}
+@media (max-width:380px){.cc{font-size:.72rem;padding:4px 7px 4px 5px}.bcard{padding:16px}}
+@media (prefers-reduced-motion:reduce){.bcard,.mc,.pickbtn,.lang button{transition:none}.bcard:hover{transform:none}.mc:hover{transform:none}}
+</style>
+
+<header class="hero">
+  <canvas id="swell" aria-hidden="true"></canvas>
+  <div class="hero-in">
+    <div class="hero-top">
+      <span class="eyebrow" data-i18n="eyebrow">Fuerteventura · sever ostrova</span>
+      <div class="lang" role="group" aria-label="Jazyk stránky" data-i18n-aria="langAria">
+        <button type="button" data-lang="cs" lang="cs" aria-pressed="true" title="Česky">CZ</button>
+        <button type="button" data-lang="en" lang="en" aria-pressed="false" title="English">EN</button>
+      </div>
+    </div>
+    <h1>Surf Fuerteventura</h1>
+    <p class="hero-spots" data-i18n="heroSpots">Sever · Východ · Západ</p>
+    <section class="htide" id="htide" aria-labelledby="htide-h" hidden></section>
+    <p class="meta" id="updated">Načítám předpověď…</p>
+    <p class="stale" id="stale" hidden></p>
+    <h2 class="hero-h" id="h-best">Kdy jít jezdit dnes</h2>
+    <div class="pick" id="pick" hidden></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="today" aria-labelledby="h-best"><div class="best" id="best"></div></section>
+
+  <aside class="notebox card" id="notebox" hidden><span class="lk" data-i18n="noteLk">Komentář</span><p class="note" id="note"></p></aside>
+
+  <section aria-labelledby="h-mx">
+    <h2 class="sect-h" id="h-mx" data-i18n="hMx">Tři dny v kostce</h2>
+    <div class="mxcard card">
+      <div id="matrix"></div>
+      <div class="keys" data-i18n="keys"></div>
+    </div>
+  </section>
+
+  <nav class="tabs" id="tabs" aria-label="Spoty podle pobřeží" data-i18n-aria="tabsAria"></nav>
+  <main id="panel" role="tabpanel" tabindex="-1"></main>
+
+  <footer data-i18n="footer"></footer>
+</div>
+
+<script>
+// ---- Core logic: pure functions, no DOM. Tested in Node before being inlined into the page. ----
+const TZ = "Atlantic/Canary";
+const DIRS = {N:0,NNE:22.5,NE:45,ENE:67.5,E:90,ESE:112.5,SE:135,SSE:157.5,S:180,SSW:202.5,SW:225,WSW:247.5,W:270,WNW:292.5,NW:315,NNW:337.5};
+const CZ = {N:"S",NNE:"SSV",NE:"SV",ENE:"VSV",E:"V",ESE:"VJV",SE:"JV",SSE:"JJV",S:"J",SSW:"JJZ",SW:"JZ",WSW:"ZJZ",W:"Z",WNW:"ZSZ",NW:"SZ",NNW:"SSZ"};
+const MODEL_POINT = {lat: 28.75, lon: -13.93}; // surf-forecast.com Majanicho (used for daylight everywhere; the spots are within 15 km)
+
+// Coast regions, in the order they are shown.
+const REGIONS = [
+  {id: "sever", name: "Sever", tab: "Sever", sub: "North Shore mezi Cotillem a Corralejem"},
+  {id: "vychod", name: "Východ", tab: "Východ", sub: "Corralejo, záliv naproti Lobosu"},
+  {id: "zapad", name: "Západ", tab: "Západ", sub: "Jižně od El Cotilla"}
+];
+
+// face = direction the spot looks out to sea (onshore wind blows FROM here).
+// point = which surf-forecast.com forecast the spot uses; own = that forecast is the spot's own page.
+// Each peak: sw = ideal swell sector {c, spread}; tidePref: "upper" = mid→high and high→mid (upper half of the tide),
+// "lower" = low→mid and mid→low; tideFloor = factor at the worst extreme (dead low for "upper").
+// lv = what suits each level: beg = začátečník, int = středně pokročilý (a peak without the level is not for it).
+//   hgt = wave height in m as the forecast point reports it {min, lo, hi, max}: ideal lo–hi, rideable min–max;
+//   kj = wave energy in kJ {lo, hi, max}: below lo the waves are weak, above hi too strong (worst from max).
+// Intermediate here means waves up to about 1 m (the users' own limit after Esquinzo at 1.1–1.2 m and 13–14 s
+// was too big): ideal up to 1.0 m, rideable up to 1.2 m at every spot. Beginners stay below that.
+// Energy follows height at a 12 s period (E ≈ 2·H²·T² ≈ 290·H² kJ), so a long-period swell at the top of
+// the range loses points for power as well. The Outside peaks need a bigger swell than that, so they have no level.
+const SPOTS = [
+  { id: "puntablanca", name: "Punta Blanca", short: "Punta Blanca", region: "sever", point: "majanicho", lat: 28.725376, lon: -13.989917, face: 330,
+    type: "A-frame přes kameny a písek", level: "Začátečníci a mírně pokročilí",
+    peaks: [
+      { name: "Punta Blanca", sw: {c: 331, spread: 78}, tidePref: "upper", tideFloor: 0.35,
+        tideText: "mid → high a high → mid, kolem odlivu nejhorší",
+        lv: {beg: {hgt: {min: 0.3, lo: 0.4, hi: 0.8, max: 1.1}, kj: {hi: 190, max: 350}},
+             int: {hgt: {min: 0.4, lo: 0.6, hi: 1.0, max: 1.2}, kj: {hi: 290, max: 490}}} }
+    ]},
+  { id: "majanicho", name: "Majanicho", short: "Majanicho", region: "sever", point: "majanicho", own: true, lat: 28.743887, lon: -13.936072, face: 335,
+    type: "Reef a point, dvě pravé vlny", level: "Inside všichni, Outside pokročilí",
+    peaks: [
+      { name: "Inside", sw: {c: 352, spread: 76}, tidePref: "upper", tideFloor: 0.6,
+        tideText: "mid → high a high → mid, kolem přílivu",
+        lv: {beg: {hgt: {min: 0.4, lo: 0.6, hi: 0.8, max: 1.1}, kj: {hi: 190, max: 350}},
+             int: {hgt: {min: 0.5, lo: 0.7, hi: 1.0, max: 1.2}, kj: {lo: 140, hi: 290, max: 490}}} },
+      { name: "Outside", sw: {c: 326, spread: 60}, tidePref: "lower", tideFloor: 0.6,
+        tideText: "low → mid a mid → low, kolem odlivu", lv: {} }
+    ]},
+  { id: "caleta", name: "La Caleta", short: "La Caleta", region: "sever", point: "majanicho", lat: 28.749559, lon: -13.918383, face: 345,
+    type: "Levá přes útes", level: "Všechny úrovně",
+    peaks: [
+      { name: "La Caleta", sw: {c: 0, spread: 68}, tidePref: "upper", tideFloor: 0.6,
+        tideText: "mid → high a high → mid, kolem přílivu",
+        lv: {beg: {hgt: {min: 0.7, lo: 0.8, hi: 0.9, max: 1.1}, kj: {hi: 240, max: 350}},
+             int: {hgt: {min: 0.7, lo: 0.8, hi: 1.0, max: 1.2}, kj: {lo: 190, hi: 290, max: 490}}} }
+    ]},
+  // East: Corralejo bay. surf-forecast.com already scales the wave height down for this sheltered corner,
+  // so the swell sectors are wide (the height carries the exposure) and the energies are small.
+  { id: "flag", name: "Dunas", short: "Dunas", region: "vychod", point: "bajo", lat: 28.7201, lon: -13.8394, face: 60,
+    type: "Beach break přes písek a kameny", level: "Začátečníci a mírně pokročilí",
+    peaks: [
+      { name: "Dunas", sw: {c: 0, spread: 80}, tidePref: "upper", tideFloor: 0.5,
+        tideText: "mid → high a high → mid, na odlivu vylézají kameny",
+        lv: {beg: {hgt: {min: 0.2, lo: 0.4, hi: 0.8, max: 1.1}, kj: {hi: 150, max: 280}},
+             int: {hgt: {min: 0.3, lo: 0.5, hi: 1.0, max: 1.2}, kj: {hi: 290, max: 490}}} }
+    ]},
+  { id: "rocky", name: "Rocky Point", short: "Rocky Point", region: "vychod", point: "bajo", own: true, lat: 28.733566, lon: -13.856046, face: 40,
+    type: "Reef, pravá i levá", level: "Inside všichni a školy, Outside pokročilí",
+    peaks: [
+      { name: "Inside", sw: {c: 345, spread: 80}, tidePref: "upper", tideFloor: 0.7,
+        tideText: "všechny fáze, nejpohodlněji mid → high a high → mid",
+        lv: {beg: {hgt: {min: 0.2, lo: 0.35, hi: 0.7, max: 1.0}, kj: {hi: 115, max: 230}},
+             int: {hgt: {min: 0.3, lo: 0.5, hi: 1.0, max: 1.2}, kj: {hi: 290, max: 490}}} },
+      { name: "Outside", sw: {c: 340, spread: 75}, tidePref: "upper", tideFloor: 0.55,
+        tideText: "mid → high a high → mid, na odlivu mělký útes", lv: {} }
+    ]},
+  // West: open Atlantic beach south of El Cotillo, faces WNW.
+  { id: "esquinzo", name: "Playa de Esquinzo", short: "Esquinzo", region: "zapad", point: "esquinzo", own: true, lat: 28.635413, lon: -14.028022, face: 290,
+    type: "Beach break, A-frame", level: "Mírně pokročilí a pokročilí",
+    peaks: [
+      { name: "Playa de Esquinzo", sw: {c: 300, spread: 75}, tidePref: "upper", tideFloor: 0.7,
+        tideText: "všechny fáze, nejlépe mid → high a high → mid",
+        lv: {beg: {hgt: {min: 0.4, lo: 0.5, hi: 0.8, max: 1.1}, kj: {hi: 190, max: 350}},
+             int: {hgt: {min: 0.4, lo: 0.6, hi: 1.0, max: 1.2}, kj: {lo: 100, hi: 290, max: 490}}} }
+    ]}
+];
+const LEVELS = ["beg", "int"];
+const peaksFor = (spot, lvl) => spot.peaks.filter(pk => pk.lv && pk.lv[lvl]);
+
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const angDiff = (a, b) => { let d = Math.abs(a - b) % 360; return d > 180 ? 360 - d : d; };
+const pad = n => String(n).padStart(2, "0");
+const HOUR = 3600000, MIN = 60000;
+
+// --- Time zone helpers: local wall time in Atlantic/Canary <-> UTC instants (handles the DST switch).
+const _fmt = new Intl.DateTimeFormat("en-CA", {timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23"});
+function localParts(ms) {
+  const p = {}; for (const x of _fmt.formatToParts(new Date(ms))) p[x.type] = x.value;
+  return {d: `${p.year}-${p.month}-${p.day}`, min: (+p.hour % 24) * 60 + (+p.minute), hm: `${pad(+p.hour % 24)}:${p.minute}`};
+}
+function tzOffsetMin(ms) {
+  const lp = localParts(ms); const [Y, M, D] = lp.d.split("-").map(Number);
+  return Math.round((Date.UTC(Y, M - 1, D) + lp.min * MIN - Math.floor(ms / MIN) * MIN) / MIN);
+}
+function toInstant(d, t) {
+  const [Y, M, D] = d.split("-").map(Number); const [h, m] = t.split(":").map(Number);
+  const wall = Date.UTC(Y, M - 1, D, h, m);
+  let ms = wall - tzOffsetMin(wall) * MIN;
+  ms = wall - tzOffsetMin(ms) * MIN;
+  return ms;
+}
+const hm = ms => localParts(ms).hm;
+
+// --- Sun: sunrise equation (NOAA/Wikipedia form). Returns UTC instants in ms.
+function sunEvents(d, lat = MODEL_POINT.lat, lon = MODEL_POINT.lon) {
+  const rad = Math.PI / 180; const [Y, M, D] = d.split("-").map(Number);
+  const n = Math.round(Date.UTC(Y, M - 1, D, 12) / 86400000 + 2440587.5 - 2451545.0);
+  const Js = n - lon / 360;
+  const Mdeg = ((357.5291 + 0.98560028 * Js) % 360 + 360) % 360, Mr = Mdeg * rad;
+  const C = 1.9148 * Math.sin(Mr) + 0.02 * Math.sin(2 * Mr) + 0.0003 * Math.sin(3 * Mr);
+  const lam = ((Mdeg + C + 180 + 102.9372) % 360) * rad;
+  const Jt = 2451545 + Js + 0.0053 * Math.sin(Mr) - 0.0069 * Math.sin(2 * lam);
+  const dec = Math.asin(Math.sin(lam) * Math.sin(23.4397 * rad));
+  const w = h0 => Math.acos((Math.sin(h0 * rad) - Math.sin(lat * rad) * Math.sin(dec)) / (Math.cos(lat * rad) * Math.cos(dec))) / rad;
+  const toMs = J => Math.round((J - 2440587.5) * 86400000);
+  const ws = w(-0.833), wc = w(-6);
+  return {dawn: toMs(Jt - wc / 360), rise: toMs(Jt - ws / 360), set: toMs(Jt + ws / 360), dusk: toMs(Jt + wc / 360)};
+}
+function lightAt(ms, d) {
+  const s = sunEvents(d);
+  if (ms < s.dawn || ms > s.dusk) return "dark";
+  if (ms < s.rise || ms > s.set) return "twilight";
+  return "day";
+}
+
+// --- Tide: cosine interpolation between consecutive extremes. f = 0 at low water, 1 at high water.
+// phase: the four quarters surfers use: low → mid, mid → high (rising), high → mid, mid → low (falling).
+const PHASE_TXT = {lowmid: "low → mid", midhigh: "mid → high", highmid: "high → mid", midlow: "mid → low"};
+function prepTides(tides) {
+  return (tides || []).map(e => ({ms: toInstant(e.d, e.t), m: +e.m, k: e.k, d: e.d, t: e.t}))
+    .filter(e => isFinite(e.ms) && isFinite(e.m) && (e.k === "H" || e.k === "L")).sort((a, b) => a.ms - b.ms);
+}
+function tideAt(T, ms) {
+  for (let i = 0; i < T.length - 1; i++) {
+    const a = T[i], b = T[i + 1];
+    if (ms >= a.ms && ms <= b.ms && a.k !== b.k) {
+      const x = (ms - a.ms) / (b.ms - a.ms);
+      const m = (a.m + b.m) / 2 + (a.m - b.m) / 2 * Math.cos(Math.PI * x);
+      const lo = Math.min(a.m, b.m), hi = Math.max(a.m, b.m);
+      const f = hi > lo ? (m - lo) / (hi - lo) : 0.5;
+      const rising = b.m > a.m;
+      const phase = rising ? (f < 0.5 ? "lowmid" : "midhigh") : (f >= 0.5 ? "highmid" : "midlow");
+      return {m, f, rising, phase};
+    }
+  }
+  return null;
+}
+function tideFactor(pk, td) {
+  if (!td || !pk.tidePref || pk.tidePref === "all") return 1;
+  const g = pk.tidePref === "upper" ? td.f : 1 - td.f; // 1 at the ideal extreme, 0 at the worst
+  return g >= 0.5 ? 1 : pk.tideFloor + (1 - pk.tideFloor) * g / 0.5;
+}
+
+// --- Factors
+function heightF(h, r) {
+  if (h < r.min) return 0.05;
+  if (h < r.lo) return 0.45 + 0.55 * (h - r.min) / (r.lo - r.min);
+  if (h <= r.hi) return 1;
+  if (h <= r.max) return 1 - 0.6 * (h - r.hi) / (r.max - r.hi);
+  return 0.15;
+}
+const periodF = p => clamp(0.45 + (p - 6) * 0.55 / 7, 0.45, 1); // 6 s → 0.45 … 13 s and more → 1
+function dirF(deg, sw) {
+  if (!isFinite(deg)) return 0.7;
+  const d = angDiff(deg, sw.c);
+  return d <= sw.spread ? 1 : d <= sw.spread + 30 ? 0.7 : d <= sw.spread + 60 ? 0.4 : 0.15;
+}
+// Wave energy against the level's range: weak below lo, too strong above hi (down to 0.45 from max on).
+function powerF(kj, e) {
+  if (!isFinite(kj) || !e) return 1;
+  if (e.lo && kj < e.lo) return clamp(0.45 + 0.55 * kj / e.lo, 0.45, 1);
+  if (e.hi && kj > e.hi) return clamp(1 - 0.55 * (kj - e.hi) / ((e.max || 2 * e.hi) - e.hi), 0.45, 1);
+  return 1;
+}
+// Wind state. surf-forecast.com works it out from the exact wind at each of its points and the update stores its label
+// per slot as ws ("glassy", "off", "cross-off", "cross", "cross-on", "on"); the forecast only gives 16 compass points
+// and 5 km/h steps, so a class computed from those can differ. A spot with its own surf-forecast page (own) takes the
+// label as is. The other spots get the class from the direction against their own face, and are glassy exactly when
+// surf-forecast calls the nearby point glassy. Older data without ws: computed, glassy up to 5 km/h.
+const SF_WS = {"glassy": "glassy", "off": "off", "cross-off": "crossoff", "cross": "cross", "cross-on": "crosson", "on": "on"};
+const WS_CZ = {glassy: "bezvětří", off: "od břehu", crossoff: "boční od břehu", cross: "boční", crosson: "boční ke břehu", on: "ke břehu", unknown: "směr ?"};
+// deg = direction the wind blows FROM, in degrees; sf = surf-forecast's wind state for that time, if known.
+function windInfo(face, deg, w, sf, own) {
+  const s = SF_WS[String(sf || "").trim().toLowerCase()], over = Math.max(0, w - 10);
+  let k = "unknown";
+  if (s && own && s !== "glassy") k = s;
+  else if (isFinite(deg)) { const d = angDiff(deg, face); k = d >= 135 ? "off" : d >= 110 ? "crossoff" : d >= 70 ? "cross" : d >= 45 ? "crosson" : "on"; }
+  let base = k === "off" ? (w <= 20 ? 1 : w <= 30 ? 0.85 : 0.65) : k === "crossoff" ? 0.9 - 0.01 * over : k === "cross" ? 0.65 - 0.015 * over
+    : k === "crosson" ? 0.45 - 0.015 * over : k === "on" ? 0.3 - 0.015 * over : 0.5;
+  // Light wind leaves little texture whatever the direction; the effect fades smoothly up to 12 km/h.
+  if (w <= 12) base = Math.max(base, 1 - (k === "on" || k === "crosson" ? 0.045 : 0.03) * Math.max(0, w - 4));
+  if (s ? s === "glassy" : w <= 5) { k = "glassy"; base = Math.max(base, 0.97); }
+  return {k, label: WS_CZ[k], f: clamp(base, 0.05, 1)};
+}
+const band = v => v == null ? "dark" : v >= 6 ? "great" : v >= 3 ? "ok" : "poor";
+const BAND_CZ = {great: "stojí za to", ok: "dá se", poor: "nejezdi", dark: "tma"};
+
+// --- Forecast slots (3-hourly model points) and conditions between them.
+function prepSlots(slots) {
+  return (slots || []).map(s => ({...s, ms: toInstant(s.d, s.t), sdDeg: DIRS[s.sd], wdDeg: DIRS[s.wd]}))
+    .filter(s => isFinite(s.ms)).sort((a, b) => a.ms - b.ms);
+}
+function circLerp(a, b, t) {
+  if (!isFinite(a)) return b; if (!isFinite(b)) return a;
+  const d = ((b - a + 540) % 360) - 180; return ((a + d * t) % 360 + 360) % 360;
+}
+// Conditions at any instant: linear between neighbouring model points up to 3.5 h apart,
+// otherwise the nearest point held for at most 1.6 h. Returns null outside the forecast.
+function condAt(S, ms) {
+  let i = -1; for (let k = 0; k < S.length; k++) if (S[k].ms <= ms) i = k;
+  const a = S[i], b = S[i + 1];
+  if (a && b && b.ms - a.ms <= 3.5 * HOUR) {
+    const t = (ms - a.ms) / (b.ms - a.ms), L = (x, y) => x + (y - x) * t;
+    const kj = isFinite(a.kj) && isFinite(b.kj) ? L(a.kj, b.kj) : NaN;
+    // The wind state is a class, not a number: it comes from the nearer of the two model points.
+    return {h: L(a.h, b.h), p: L(a.p, b.p), kj, w: L(a.w, b.w), sdDeg: circLerp(a.sdDeg, b.sdDeg, t), wdDeg: circLerp(a.wdDeg, b.wdDeg, t), ws: t < 0.5 ? a.ws : b.ws, exact: t === 0};
+  }
+  if (a && ms - a.ms <= 1.6 * HOUR) return {h: a.h, p: a.p, kj: a.kj, w: a.w, sdDeg: a.sdDeg, wdDeg: a.wdDeg, ws: a.ws, exact: ms === a.ms};
+  if (b && b.ms - ms <= 1.6 * HOUR) return {h: b.h, p: b.p, kj: b.kj, w: b.w, sdDeg: b.sdDeg, wdDeg: b.wdDeg, ws: b.ws, exact: false};
+  return null;
+}
+function scoreCond(spot, c, tide, lvl = "int") {
+  const wind = windInfo(spot.face, c.wdDeg, c.w, c.ws, spot.own);
+  const peaks = peaksFor(spot, lvl).map(pk => {
+    const L = pk.lv[lvl];
+    const F = {h: heightF(c.h, L.hgt), p: periodF(c.p), d: dirF(c.sdDeg, pk.sw), w: wind.f, t: tideFactor(pk, tide), e: powerF(c.kj, L.kj)};
+    const raw = clamp(10 * F.h * F.p * F.d * F.w * F.t * F.e, 0, 10);
+    return {peak: pk, F, raw, v: Math.round(raw)};
+  });
+  const best = peaks.reduce((x, y) => y.raw > x.raw ? y : x, peaks[0]);
+  return {wind, peaks, best};
+}
+// Score one model point for one spot. Times in the dark are not scored (v = null).
+function scoreSlot(spot, s, T, lvl) {
+  const light = lightAt(s.ms, s.d), tide = tideAt(T, s.ms);
+  const r = scoreCond(spot, {h: s.h, p: s.p, kj: s.kj, w: s.w, sdDeg: s.sdDeg, wdDeg: s.wdDeg, ws: s.ws}, tide, lvl);
+  return {ms: s.ms, light, tide, ...r, v: light === "dark" ? null : r.best.v};
+}
+
+// "When to go": every 10 minutes between first and last light, score tide + wind + swell together
+// and return the stretches that reach at least minV, each with its peak moment.
+// The whole day in daylight, every 10 minutes: score with tide + wind + swell (raw = null outside the forecast).
+const STEP = 10 * MIN;
+function dayScores(spot, S, T, d, lvl) {
+  const s = sunEvents(d), out = [];
+  for (let ms = s.dawn; ms <= s.dusk; ms += STEP) {
+    const c = condAt(S, ms), td = tideAt(T, ms);
+    if (!c) { out.push({ms, raw: null}); continue; }
+    const r = scoreCond(spot, c, td, lvl);
+    out.push({ms, raw: r.best.raw, peak: r.best.peak, F: r.best.F, cond: c, tide: td, wind: r.wind});
+  }
+  return out;
+}
+// The best stretch of the day even when nothing is good: around the top score, staying close to it.
+// `from` drops samples before that instant (the rest of today). Returns null when nothing is left.
+function bestStretch(scores, from = -Infinity) {
+  const X = scores.filter(x => x.raw != null && x.ms >= from);
+  if (!X.length) return null;
+  let iMax = 0; X.forEach((x, i) => { if (x.raw > X[iMax].raw) iMax = i; });
+  // Tolerance grows with the score: tight on weak days (so the stretch stays meaningful), about 1 point on good ones.
+  const tol = clamp(0.15 * X[iMax].raw, 0.25, 1);
+  let i0 = iMax, i1 = iMax; const lim = X[iMax].raw - tol;
+  while (i0 > 0 && X[i0 - 1].raw >= lim && X[i0].ms - X[i0 - 1].ms <= STEP) i0--;
+  while (i1 < X.length - 1 && X[i1 + 1].raw >= lim && X[i1 + 1].ms - X[i1].ms <= STEP) i1++;
+  const top = X[iMax];
+  return {a: X[i0].ms, b: X[i1].ms, v: Math.round(top.raw), raw: top.raw, at: top.ms, peak: top.peak, F: top.F, cond: top.cond, tide: top.tide, wind: top.wind,
+    whole: i0 === 0 && i1 === X.length - 1};
+}
+// A long stretch can have two good parts with a clear dip between them (say before and after low tide).
+// Cut it at the lowest point between parts that each come within 1 point of the best score,
+// when that dip falls more than 2 points below the best. Shallow dips stay inside one part.
+function splitRun(X) {
+  const max = Math.max(...X.map(x => x.raw)), cores = []; let c = null;
+  X.forEach((x, i) => { if (x.raw >= max - 1) { if (c) c.i1 = i; else c = {i0: i, i1: i}; } else if (c) { cores.push(c); c = null; } });
+  if (c) cores.push(c);
+  const keep = [cores[0]];
+  for (const k of cores.slice(1)) {
+    const prev = keep[keep.length - 1]; let lo = Infinity;
+    for (let i = prev.i1 + 1; i < k.i0; i++) lo = Math.min(lo, X[i].raw);
+    if (lo >= max - 2) prev.i1 = k.i1; else keep.push(k);
+  }
+  const parts = []; let start = 0;
+  for (let j = 1; j < keep.length; j++) {
+    let iMin = keep[j - 1].i1 + 1;
+    for (let i = iMin; i < keep[j].i0; i++) if (X[i].raw < X[iMin].raw) iMin = i;
+    parts.push(X.slice(start, iMin)); start = iMin;
+  }
+  parts.push(X.slice(start));
+  return parts;
+}
+// Riding windows: daylight stretches that reach at least minV. Each has a "core", the part around its peak
+// that stays within 1 point of the best score, and runA/runB, the whole stretch it belongs to
+// when a long stretch was split in two.
+function rideWindows(spot, S, T, d, minV = 3, scores, lvl) {
+  const s = sunEvents(d), runs = []; let cur = null;
+  for (const x of scores || dayScores(spot, S, T, d, lvl)) {
+    if (x.raw != null && Math.round(x.raw) >= minV) (cur || (cur = [])).push(x);
+    else if (cur) { runs.push(cur); cur = null; }
+  }
+  if (cur) runs.push(cur);
+  const out = [];
+  runs.filter(R => R.length >= 3).forEach(R => {
+    const run = {runA: R[0].ms, runB: R[R.length - 1].ms, fromDawn: R[0].ms === s.dawn, toDusk: R[R.length - 1].ms + STEP > s.dusk};
+    splitRun(R).filter(X => X.length >= 3).forEach((X, part) => {
+      let iMax = 0; X.forEach((x, i) => { if (x.raw > X[iMax].raw) iMax = i; });
+      const top = X[iMax];
+      let i0 = iMax, i1 = iMax;
+      while (i0 > 0 && X[i0 - 1].raw >= top.raw - 1) i0--;
+      while (i1 < X.length - 1 && X[i1 + 1].raw >= top.raw - 1) i1++;
+      out.push({a: X[0].ms, b: X[X.length - 1].ms, coreA: X[i0].ms, coreB: X[i1].ms, v: Math.round(top.raw), raw: top.raw,
+        at: top.ms, peak: top.peak, F: top.F, cond: top.cond, tide: top.tide, wind: top.wind, part, ...run,
+        samples: X.map(x => ({ms: x.ms, raw: x.raw}))});
+    });
+  });
+  return out;
+}
+// Daylight stretches where the tide alone is ideal for the peak.
+function tideWindows(pk, T, d) {
+  if (!pk.tidePref || pk.tidePref === "all") return "all";
+  const s = sunEvents(d), step = 5 * MIN, out = []; let cur = null;
+  for (let ms = s.dawn; ms <= s.dusk; ms += step) {
+    const td = tideAt(T, ms), ok = td && tideFactor(pk, td) >= 1;
+    if (ok && !cur) cur = {a: ms, b: ms};
+    else if (ok) cur.b = ms;
+    else if (cur) { out.push(cur); cur = null; }
+  }
+  if (cur) out.push(cur);
+  return out.filter(x => x.b - x.a >= 30 * MIN);
+}
+
+// Which of two options to recommend: the higher shown score, then a clearly higher raw score,
+// then the longer stretch. x and y carry v, raw and a length in ms.
+function better(x, y) {
+  if (x.v !== y.v) return x.v > y.v;
+  if (Math.abs(x.raw - y.raw) > 0.25) return x.raw > y.raw;
+  return x.len !== y.len ? x.len > y.len : x.raw > y.raw;
+}
+// The window to recommend first, judged on its best part.
+const bestWindow = ws => ws.reduce((a, w) => better({...w, len: w.coreB - w.coreA}, {...a, len: a.coreB - a.coreA}) ? w : a, ws[0]);
+
+if (typeof module !== "undefined") module.exports = {SPOTS, REGIONS, LEVELS, peaksFor, powerF, heightF, DIRS, CZ, TZ, PHASE_TXT, STEP, localParts, toInstant, hm, sunEvents, lightAt, prepTides, tideAt, tideFactor, prepSlots, condAt, windInfo, scoreSlot, dayScores, bestStretch, rideWindows, bestWindow, better, tideWindows, band, BAND_CZ};
+
+// ---- UI layer: renders the page from DATA (the embedded forecast) and the core logic. ----
+// Two languages: Czech (default) and English, switched in the hero and remembered per viewer.
+// The core keeps its Czech labels (the update script reads them); the UI picks the text by language.
+const LANGS = ["cs", "en"];
+let LANG = "cs";
+try { const l = localStorage.getItem("ns_lang"); if (LANGS.includes(l)) LANG = l; } catch (e) {}
+const isEN = () => LANG === "en";
+
+// Footer sources, shared by both languages.
+const A = (u, t) => `<a href="${u}" target="_blank" rel="noopener">${t}</a>`;
+const SRC = {
+  sfMaj: "https://www.surf-forecast.com/breaks/Majanicho/forecasts/latest",
+  sfBajo: "https://www.surf-forecast.com/breaks/Rocky-Point_Bajodel-Medio/forecasts/latest",
+  sfEsq: "https://www.surf-forecast.com/breaks/Playade-Esquinzo_1/forecasts/latest",
+  tCorr: "https://www.surf-forecast.com/breaks/Majanicho/tides/latest",
+  tCot: "https://www.surf-forecast.com/breaks/Playade-Esquinzo_1/tides/latest",
+  mPB: "https://www.mondo.surf/surf-spot/punta-blanca/forecast/2367",
+  mMajI: "https://www.mondo.surf/surf-spot/majanicho/guide/2399",
+  mMajO: "https://www.mondo.surf/surf-spot/majanicho-outside/guide/2465",
+  mCal: "https://www.mondo.surf/surf-spot/caleta/guide/1525",
+  mRocky: "https://www.mondo.surf/surf-spot/rocky-point-2/guide/2387",
+  mEsq: "https://www.mondo.surf/surf-spot/playa-de-esquinzo/guide/2385",
+  fpRocky: "https://www.fuerteventuraplayas.com/en/spot/rocky-point-outside/",
+  fpFlag: "https://www.fuerteventuraplayas.com/en/spot/flag-beach-kite-beach/",
+  snFlag: "https://surfnerd.com/surf-forecast/flag-beach",
+  atlas: "https://thesurfatlas.com/surfing-in-canary-islands/corralejo-surf/",
+  lobos: "https://www.lobosurfuerteventura.com/en/punta-blanca-surf-spot-details/",
+  fss: "https://fuerteventurasurfschool.com/blog/243-tides-for-surfing-in-fuerteventura"
+};
+const sourcesP = (h, fc, and, tides) => `<p><b>${h}</b> surf-forecast.com – ${fc} ${A(SRC.sfMaj, "Majanicho")}, ${A(SRC.sfBajo, "Bajo el Medio (Rocky Point)")} ${and} ${A(SRC.sfEsq, "Playa de Esquinzo")}, ${tides} ${A(SRC.tCorr, "Corralejo")} ${and} ${A(SRC.tCot, "Cotillo")}; mondo.surf – ${A(SRC.mPB, "Punta Blanca")}, ${A(SRC.mMajI, "Majanicho Inside")}, ${A(SRC.mMajO, "Majanicho Outside")}, ${A(SRC.mCal, "Caleta")}, ${A(SRC.mRocky, "Rocky Point")}, ${A(SRC.mEsq, "Playa de Esquinzo")}; ${A(SRC.fpRocky, "fuerteventuraplayas Rocky Point")} ${and} ${A(SRC.fpFlag, "Flag Beach (Dunas)")}, ${A(SRC.snFlag, "surfnerd Flag Beach (Dunas)")}, ${A(SRC.atlas, "The Surf Atlas – Corralejo")}, ${A(SRC.lobos, "Lobos Surf Camp")}, ${A(SRC.fss, "Fuerteventura Surf School")}.</p>`;
+const keysHtml = (great, ok, poor, dark, now) => `<span><i style="--c:var(--great-bg)"></i>6–10 ${great}</span><span><i style="--c:var(--ok-bg)"></i>3–5 ${ok}</span><span><i style="--c:var(--poor-bg)"></i>0–2 ${poor}</span><span><i class="hatch"></i>${dark}</span><span><i style="--c:transparent;box-shadow:0 0 0 2px var(--bad)"></i>${now}</span>`;
+
+// ---------- All interface text, by language ----------
+const STR = {
+  cs: {
+    locale: "cs-CZ", dec: ",", and: " a ",
+    now: "teď", dark: "tma", tw: () => "šero",
+    today: "Dnes", tomorrow: "Zítra", dayAfter: "Pozítří",
+    band: {great: "stojí za to", ok: "dá se", poor: "nejezdi", dark: "tma"},
+    pickBand: {great: "stojí za to", ok: "dá se", poor: "slabé"},
+    wetsuit: t => t >= 23 ? "lycra nebo shorty" : t >= 20.5 ? "shorty nebo 2 mm" : t >= 18 ? "3/2 mm" : "4/3 mm",
+    loading: "Načítám předpověď…", empty: "Předpověď zatím není nahraná.", error: "Předpověď se nepodařilo načíst. Obnov stránku.",
+    noDb: "Uložená předpověď se v tomto zobrazení nedá načíst, průvodce spoty funguje i tak.",
+    updated: w => `Aktualizováno ${w}`, model: "model surf-forecast.com", issued: x => `vydán ${x}`,
+    water: (t, s) => `voda ${t} °C (${s})`,
+    expired: "Předpověď už vypršela. Automatická aktualizace se asi zasekla.",
+    old: n => `Data jsou stará ${n} d. Automatická aktualizace se asi zasekla.`,
+    tideHead: "Příliv a odliv dnes",
+    tideNow: (rising, ph, nx, tmr) => `Teď voda ${rising ? "stoupá" : "klesá"} (${ph})${nx ? `, ${nx.k === "H" ? "příliv" : "odliv"} ${tmr ? "zítra " : ""}v ${nx.t}` : ""}`,
+    tideFoot: n => `Corralejo (sever a východ)${n != null ? `, Cotillo (západ) se liší nejvýš o ${n} min` : ""}.`,
+    hBest: wd => `Kdy jít jezdit dnes, ${wd}`, waiting: "Čekám na předpověď",
+    cmpToday: t => `mondo.surf dnes: ${t}`, nextGood: "Nejbližší dobré okno",
+    noToday: "Pro dnešek v datech předpověď není.",
+    doneWin: (a, b, v) => `Dnešní dobré okno už proběhlo (${a}–${b}, ${v}/10).`,
+    darkNow: "Dnes už je tma", weakRest: "celý zbytek dne podobně slabé", weakBest: "slabé, ale dnes nejlíp",
+    brief: b => `${b}, jen krátce`, weakWhy: "Slabé hlavně kvůli:", later: "Dnes ještě:",
+    pickToday: "Dnes nejlíp", pickTomorrow: "Dnes už je tma · zítra nejlíp",
+    mxWait: "Přehled se ukáže, jakmile se načte předpověď.", mxExpired: "Předpověď vypršela. Automatická aktualizace se asi zasekla.",
+    noData: "bez dat", darkNot: "tma, nehodnotí se", cell: (v, b) => `${v} z 10, ${b}`,
+    coast: "Pobřeží", spots: "Spoty", nSpots: n => n === 1 ? "1 spot" : n < 5 ? `${n} spoty` : `${n} spotů`,
+    tHP: "výška vln a perioda", tKj: "síla vln", swellFrom: d => `swell z ${d}`, windSr: "vítr", windFrom: d => `vítr z ${d}`,
+    glassy: "bezvětří", tideSr: "voda", tideTitle: "voda (příliv a odliv)",
+    noGood: "žádné dobré okno", cmpSwell: (s, d) => `swell ${s} s z ${d}`, cmpWind: d => `vítr z ${d}`,
+    size: "Velikost", period: "Perioda", energy: "Síla vln", sdir: "Směr swellu", wind: "Vítr", tide: "Voda", light: "Světlo",
+    fits: "sedí", small: "spíš malé", big: "spíš velké", tooSmall: "moc malé", tooBig: "moc velké", ideal: "ideál", forPk: n => `pro ${n} `,
+    per: p => p >= 13 ? "dlouhá, silný swell" : p >= 11 ? "dobrá" : p >= 9 ? "střední" : "krátká, větrné vlny",
+    enOk: "akorát", enWeak: "slabá", enStrongish: "spíš silná", enStrong: "moc silná",
+    dirFit: f => f >= 1 ? "sedí" : f >= 0.7 ? "okrajově" : "nesedí",
+    fromDir: d => `z ${d}`, speedFrom: (w, d) => `${w} km/h z ${d}`,
+    windDesc: {glassy: "skoro hladká voda", off: "fouká od pevniny, ideál", crossoff: "z boku, spíš od pevniny", cross: "fouká podél pobřeží", crosson: "z boku, spíš ke břehu", on: "fouká z moře ke břehu, rozfoukané", unknown: ""},
+    tideLine: (rising, ph, f, pk) => `${rising ? "Příliv" : "Odliv"} (${rising ? "stoupá" : "klesá"}), ${ph}, ${f >= 1 ? "sedí" : f >= 0.6 ? "nic moc" : "špatná"} pro ${pk}`,
+    lightTxt: (l, v) => l === "day" ? "den" : l === "twilight" ? "šero, ale dá se jezdit" : `tma, za světla by to bylo ${v}/10`,
+    sfRates: (n, v) => `surf-forecast.com hodnotí ${n} ${v}/10`, close: "Zavřít ✕",
+    lim: {
+      w: (w, d, s) => `vítr ${w} km/h z ${d} (${s})`,
+      hSmall: h => `malé vlny (${h} m)`, hBig: (h, hi) => `moc velké vlny (${h} m, ideál do ${hi} m)`,
+      p: p => `krátká perioda (${p} s)`, d: d => `swell z nevhodného směru (z ${d})`, t: ph => `nevhodná voda (${ph})`,
+      eWeak: k => `slabý swell (${k} kJ)`, eStrong: k => `moc silné vlny (${k} kJ)`,
+      both: (big, h, k, hi) => big ? `moc velké a silné vlny (${h} m, ${k} kJ, ideál do ${hi} m)` : `malé a slabé vlny (${h} m, ${k} kJ)`
+    },
+    go: "Kdy jít", over: "proběhlo", darkAlready: "Dnes už je tma.", tagBest: "nejlépe", rideable: "Dá se",
+    allDaylight: "celý den za světla", fromDawn: "od rozbřesku", toDusk: "do tmy",
+    pastBest: (a, b, v) => `Nejlépe dnes bylo ${a}–${b} (${v}/10).`,
+    tagWeak: "slabé", restSimilar: "celý zbytek dne podobně", daySimilar: "celý den podobně", bestOfDay: "nejlepší čas dne", tagBrief: "jen krátce",
+    time: "Čas", whyTitle: "Proč toto hodnocení",
+    rows: {score: "Skóre", waves: "Vlny", period: "Perioda", kj: "kJ", swell: "Swell", wind: "Vítr", ws: "Stav<br>větru", tide: "Voda"},
+    rising: "voda stoupá", falling: "voda klesá",
+    idealTide: "ideální voda", legBar: "kdy jít: šedá slabé · žlutá dá se · zelená stojí za to", legOutline: "nejlepší čas slabého dne",
+    legShade: "tma a šero", legGood: "sedí · vítr od břehu", legOk: "ujde · boční vítr", legBad: "nesedí · vítr ke břehu", legCmp: "okna mondo.surf",
+    legTap: "Klepni na čas v tabulce a uvidíš, proč má takové hodnocení.",
+    lv: {beg: "Začátečník", int: "Středně pokročilý"}, notSuit: "nevhodné", height: "Výška", energyK: "Síla",
+    rideRange: (a, b) => `jde ${a}–${b} m`, upTo: "do", fromK: "od",
+    idealFine: n => `Hodnocení na stránce počítá se středně pokročilými, tedy s vlnami zhruba do 1 m. Výška a energie jsou podle předpovědi bodu ${n}, rozsahy jsou odhad podle typu spotu a zdrojů.`,
+    map: "Mapa", fcAt: (d, t) => `Předpověď ${d} ${t}:`, glassyTxt: "bezvětří",
+    windTxt: (w, d, s) => `vítr ${w} km/h z ${d} (${s})`, swellTxt: (h, d) => `swell ${h} m z ${d}`,
+    dashed: "Přerušovaná šipka ukazuje, odkud a kam fouká.", noFocus: "Skutečný vítr podle předpovědi se ukáže po načtení dat.",
+    bestW: "Nejlépe", idealDaylight: "Ideální voda za světla", allDay: "celý den",
+    fcNone: "Předpověď zatím není k dispozici. Automatická aktualizace se asi zasekla.",
+    fcNoSpot: "Pro tenhle spot v uložené předpovědi data nejsou. Automatická aktualizace se asi zasekla.",
+    fcExpired: "Předpověď vypršela, poslední den v datech už proběhl. Automatická aktualizace se asi zasekla.",
+    hi: "příliv", lo: "odliv", compare: "Srovnání", sun: (r, s) => `východ ${r}, západ ${s}`, lightPill: "světlo",
+    idealHead: "Ideální výška a síla vln podle úrovně", bestTide: "Nejlepší voda", swellK: "Swell", windK: "Vítr", offTag: "(od břehu)",
+    fcHead: "Předpověď na 3 dny", guideHead: "Jak spot funguje", siteCap: "Odkud swell a odkud vítr",
+    idealSwell: "Ideální swell", comes: "přichází", idealWind: "Ideální vítr", offLand: "fouká od břehu na moře",
+    tideboxH: "Příliv a odliv: kdy jezdit", tideFor: s => ` Časy přílivu jsou pro ${s}.`,
+    dgAria: n => `${n}: odkud má přijít swell a odkud má foukat vítr`, ocean: "OCEÁN", land: "PEVNINA",
+    compass: [["S", 0], ["V", 90], ["J", 180], ["Z", 270]],
+    st: {
+      eyebrow: `<span class="nw">Fuerteventura</span> · <span class="nw">sever ostrova</span>`, heroSpots: "Sever · Východ · Západ", noteLk: "Komentář", hMx: "Tři dny v kostce",
+      keys: keysHtml("stojí za to", "dá se", "slabé", "tma", "teď"), tabsAria: "Spoty podle pobřeží", langAria: "Jazyk stránky",
+      footer: `<p><b>Jak čtu hodnocení.</b> Swell, energie, perioda a vítr jsou ze surf-forecast.com, po 3 hodinách na 3 dny. Sever bere čísla z bodu Majanicho (Punta Blanca a La Caleta leží 1–7 km od něj), východ z bodu Bajo el Medio, což je surf-forecast název pro Rocky Point (pláž Dunas je 2 km jižně), a západ z bodu Playa de Esquinzo. Skóre 0–10 počítá stránka pro každý spot zvlášť z výšky vln, periody, energie, směru swellu, větru vůči natočení pobřeží a výšky vody. U Majanicha a Rocky Point hodnotí jen Inside, Outside chce větší swell a vlny tam bývají přes 1 m. Časy za tmy se nehodnotí. Je to orientační vodítko, ne verdikt.</p>
+    <p><b>Úroveň.</b> Hodnocení, okna i doporučení počítá stránka pro středně pokročilé, tedy pro vlny zhruba do 1 m: ideál je do 1 m, nad 1 m skóre rychle klesá a nad 1,2 m jsou vlny moc velké. Při dlouhé periodě (13 s a víc) má i metrová vlna víc síly, proto stránka hlídá i energii v kJ. U každého spotu je v přehledu nahoře zvlášť ideální výška a síla vln pro začátečníky a pro středně pokročilé. Rozsahy jsou můj odhad podle typu spotu a zdrojů a vztahují se k číslům z předpovědi pro daný bod, u východu tedy k menším číslům z chráněného Bajo el Medio. Skóre ukazuje, jak podmínky sedí středně pokročilým, ne absolutní kvalitu vln jako hvězdičky na surf-forecast.com.</p>
+    <p><b>Příliv a odliv.</b> Cyklus má čtyři části, každá trvá zhruba 3 hodiny: low → mid a mid → high, kdy voda stoupá (příliv, ↗), a high → mid a mid → low, kdy klesá (odliv, ↘). Mid je polovina výšky mezi odlivem a přílivem. „Mid → high a high → mid“ tedy znamená zhruba 3 hodiny před a 3 hodiny po vrcholu přílivu (▲). Přílivy jsou pro Corralejo (sever a východ) a pro Cotillo (západ), liší se nejvýš o pár minut. Časy přílivu se každý den posouvají nepravidelně: kolem první a poslední čtvrti Měsíce i o 1,5–2 hodiny, kolem úplňku a novu jen asi o půl hodiny. Průměr je zhruba 50 minut za den.</p>
+    <p><b>Kdy jít.</b> Okna počítá stránka po 10 minutách mezi svítáním a tmou. Příliv bere přesně, vítr a swell dopočítává mezi tříhodinovými body předpovědi (proto ≈). Nejlepší část okna drží hodnocení nejvýš bod pod maximem, delší úsek „dá se“ aspoň 3/10. Když nic nedosáhne 3/10, stránka ukáže nejlepší čas dne a proč je slabý.</p>
+    <p><b>Vítr.</b> Stav větru je „wind state“ ze surf-forecast.com: u Majanicha, Rocky Point a Playa de Esquinzo ho stránka přebírá přímo odtud, protože ho surf-forecast počítá z přesného směru a síly větru. U ostatních spotů ho dopočítá ze směru větru vůči natočení pláže a bezvětří vezme z nejbližšího bodu surf-forecastu. Od břehu (offshore) fouká z pevniny na moře a vlnu uhlazuje. Ke břehu (onshore) fouká z moře na pevninu a vlnu rozbije. Boční fouká podél pobřeží, boční od břehu a boční ke břehu jsou mezi tím. Při bezvětří je voda hladká. Šipky ukazují, kam vítr nebo swell míří.</p>
+    ${sourcesP("Zdroje:", "předpovědi", "a", "přílivy")}`
+    }
+  },
+  en: {
+    locale: "en-GB", dec: ".", and: " and ",
+    now: "now", dark: "dark", tw: ms => +hm(ms).slice(0, 2) < 12 ? "dawn" : "dusk",
+    today: "Today", tomorrow: "Tomorrow", dayAfter: "",
+    band: {great: "worth it", ok: "rideable", poor: "skip it", dark: "dark"},
+    pickBand: {great: "worth it", ok: "rideable", poor: "weak"},
+    wetsuit: t => t >= 23 ? "lycra or shorty" : t >= 20.5 ? "shorty or 2 mm" : t >= 18 ? "3/2 mm" : "4/3 mm",
+    loading: "Loading the forecast…", empty: "No forecast has been uploaded yet.", error: "Couldn't load the forecast. Reload the page.",
+    noDb: "The saved forecast can't be loaded in this view; the spot guide still works.",
+    updated: w => `Updated ${w}`, model: "surf-forecast.com model", issued: x => `issued ${x}`,
+    water: (t, s) => `water ${t} °C (${s})`,
+    expired: "The forecast has expired. The automatic update seems to be stuck.",
+    old: n => `The data is ${n} d old. The automatic update seems to be stuck.`,
+    tideHead: "Tides today",
+    tideNow: (rising, ph, nx, tmr) => `Now ${rising ? "rising" : "falling"} (${ph})${nx ? `, ${nx.k === "H" ? "high" : "low"} ${tmr ? "tomorrow " : ""}at ${nx.t}` : ""}`,
+    tideFoot: n => `Corralejo (North and East)${n != null ? `; Cotillo (West) differs by ${n} min at most` : ""}.`,
+    hBest: wd => `When to surf today, ${wd}`, waiting: "Waiting for the forecast",
+    cmpToday: t => `mondo.surf today: ${t}`, nextGood: "Next good window",
+    noToday: "No forecast for today in the data.",
+    doneWin: (a, b, v) => `Today's good window is over (${a}–${b}, ${v}/10).`,
+    darkNow: "Already dark", weakRest: "similarly weak for the rest of the day", weakBest: "weak, but the best today",
+    brief: b => `${b}, only briefly`, weakWhy: "Weak mainly because of:", later: "Later today:",
+    pickToday: "Best today", pickTomorrow: "Dark now · best tomorrow",
+    mxWait: "The overview appears once the forecast loads.", mxExpired: "The forecast has expired. The automatic update seems to be stuck.",
+    noData: "no data", darkNot: "dark, not scored", cell: (v, b) => `${v} out of 10, ${b}`,
+    coast: "Coast", spots: "Spots", nSpots: n => n === 1 ? "1 spot" : `${n} spots`,
+    tHP: "wave height and period", tKj: "wave energy", swellFrom: d => `${d} swell`, windSr: "wind", windFrom: d => `wind from ${d}`,
+    glassy: "glassy", tideSr: "tide", tideTitle: "tide phase",
+    noGood: "no good window", cmpSwell: (s, d) => `swell ${s} s from ${d}`, cmpWind: d => `wind from ${d}`,
+    size: "Size", period: "Period", energy: "Wave energy", sdir: "Swell direction", wind: "Wind", tide: "Tide", light: "Light",
+    fits: "fits", small: "on the small side", big: "on the big side", tooSmall: "too small", tooBig: "too big", ideal: "ideal", forPk: n => `for ${n} `,
+    per: p => p >= 13 ? "long, strong swell" : p >= 11 ? "good" : p >= 9 ? "medium" : "short, wind swell",
+    enOk: "just right", enWeak: "weak", enStrongish: "on the strong side", enStrong: "too strong",
+    dirFit: f => f >= 1 ? "fits" : f >= 0.7 ? "marginal" : "doesn't fit",
+    fromDir: d => `from ${d}`, speedFrom: (w, d) => `${w} km/h from ${d}`,
+    windDesc: {glassy: "almost glassy water", off: "blowing off the land, ideal", crossoff: "from the side, mostly off the land", cross: "blowing along the coast", crosson: "from the side, mostly onshore", on: "blowing in from the sea, choppy", unknown: ""},
+    tideLine: (rising, ph, f, pk) => `${rising ? "Rising" : "Falling"}, ${ph}, ${f >= 1 ? "good" : f >= 0.6 ? "so-so" : "poor"} for ${pk}`,
+    lightTxt: (l, v) => l === "day" ? "daylight" : l === "twilight" ? "twilight, still surfable" : `dark; in daylight it would be ${v}/10`,
+    sfRates: (n, v) => `surf-forecast.com rates ${n} ${v}/10`, close: "Close ✕",
+    lim: {
+      w: (w, d, s) => `wind ${w} km/h from ${d} (${s})`,
+      hSmall: h => `small waves (${h} m)`, hBig: (h, hi) => `waves too big (${h} m, ideal up to ${hi} m)`,
+      p: p => `short period (${p} s)`, d: d => `swell from the wrong direction (${d})`, t: ph => `wrong tide (${ph})`,
+      eWeak: k => `weak swell (${k} kJ)`, eStrong: k => `waves too strong (${k} kJ)`,
+      both: (big, h, k, hi) => big ? `waves too big and strong (${h} m, ${k} kJ, ideal up to ${hi} m)` : `small, weak waves (${h} m, ${k} kJ)`
+    },
+    go: "When to go", over: "over", darkAlready: "It's already dark.", tagBest: "best", rideable: "Rideable",
+    allDaylight: "all daylight", fromDawn: "from first light", toDusk: "until dark",
+    pastBest: (a, b, v) => `Today's best was ${a}–${b} (${v}/10).`,
+    tagWeak: "weak", restSimilar: "same for the rest of the day", daySimilar: "same all day", bestOfDay: "best time of the day", tagBrief: "only briefly",
+    time: "Time", whyTitle: "Why this score",
+    rows: {score: "Score", waves: "Waves", period: "Period", kj: "kJ", swell: "Swell", wind: "Wind", ws: "Wind<br>state", tide: "Tide"},
+    rising: "rising tide", falling: "falling tide",
+    idealTide: "ideal tide", legBar: "when to go: grey weak · yellow rideable · green worth it", legOutline: "best time on a weak day",
+    legShade: "dark and twilight", legGood: "fits · offshore wind", legOk: "OK · cross-shore wind", legBad: "doesn't fit · onshore wind", legCmp: "mondo.surf windows",
+    legTap: "Tap a time in the table to see why it scores that way.",
+    lv: {beg: "Beginner", int: "Intermediate"}, notSuit: "not suitable", height: "Height", energyK: "Energy",
+    rideRange: (a, b) => `rideable ${a}–${b} m`, upTo: "up to", fromK: "from",
+    idealFine: n => `Scores on this page are for intermediate surfers, meaning waves up to about 1 m. Height and energy refer to the ${n} forecast point; the ranges are estimates based on the spot type and sources.`,
+    map: "Map", fcAt: (d, t) => `Forecast ${d} ${t}:`, glassyTxt: "glassy, no wind",
+    windTxt: (w, d, s) => `wind ${w} km/h from ${d} (${s})`, swellTxt: (h, d) => `swell ${h} m from ${d}`,
+    dashed: "The dashed arrow shows where the wind blows from and to.", noFocus: "The forecast wind appears once the data loads.",
+    bestW: "Best", idealDaylight: "Ideal tide in daylight", allDay: "all day",
+    fcNone: "No forecast available yet. The automatic update seems to be stuck.",
+    fcNoSpot: "The saved forecast has no data for this spot. The automatic update seems to be stuck.",
+    fcExpired: "The forecast has expired; its last day is over. The automatic update seems to be stuck.",
+    hi: "high", lo: "low", compare: "Compare", sun: (r, s) => `sunrise ${r}, sunset ${s}`, lightPill: "daylight",
+    idealHead: "Ideal wave height and energy by level", bestTide: "Best tide", swellK: "Swell", windK: "Wind", offTag: "(offshore)",
+    fcHead: "3-day forecast", guideHead: "How the spot works", siteCap: "Where the swell and wind come from",
+    idealSwell: "Ideal swell", comes: "comes", idealWind: "Ideal wind", offLand: "blowing off the land out to sea",
+    tideboxH: "Tides: when to surf", tideFor: s => ` Tide times are for ${s}.`,
+    dgAria: n => `${n}: where the swell should come from and where the wind should blow from`, ocean: "OCEAN", land: "LAND",
+    compass: [["N", 0], ["E", 90], ["S", 180], ["W", 270]],
+    st: {
+      eyebrow: `<span class="nw">Fuerteventura</span> · <span class="nw">north of the island</span>`, heroSpots: "North · East · West", noteLk: "Comment", hMx: "Three days at a glance",
+      keys: keysHtml("worth it", "rideable", "weak", "dark", "now"), tabsAria: "Spots by coast", langAria: "Page language",
+      footer: `<p><b>How to read the scores.</b> Swell, energy, period and wind come from surf-forecast.com, every 3 hours for 3 days. The north uses the Majanicho forecast point (Punta Blanca and La Caleta lie 1–7 km from it), the east uses Bajo el Medio, surf-forecast's name for Rocky Point (Dunas beach is 2 km south), and the west uses Playa de Esquinzo. The page scores each spot from 0 to 10 on its own, from wave height, period, energy, swell direction, the wind against the way the coast faces, and the tide. For Majanicho and Rocky Point it scores only the Inside; the Outside needs a bigger swell and its waves are usually over 1 m. Times in the dark are not scored. It's a guide, not a verdict.</p>
+    <p><b>Level.</b> Scores, windows and recommendations are for intermediate surfers, meaning waves up to about 1 m: the ideal is up to 1 m, above 1 m the score drops quickly and above 1.2 m the waves are too big. With a long period (13 s or more) even a 1 m wave carries more power, so the page also watches the energy in kJ. Each spot's overview lists the ideal wave height and energy separately for beginners and intermediates. The ranges are my estimates from the spot type and sources, and they refer to the numbers in that point's forecast, so for the east to the smaller numbers from sheltered Bajo el Medio. The score shows how well the conditions suit intermediates, not the absolute wave quality like the stars on surf-forecast.com.</p>
+    <p><b>Tides.</b> The cycle has four parts of about 3 hours each: low → mid and mid → high while the water rises (↗), and high → mid and mid → low while it falls (↘). Mid is halfway between low and high water. So “mid → high and high → mid” means roughly 3 hours before and 3 hours after high tide (▲). Tides are for Corralejo (north and east) and Cotillo (west); they differ by a few minutes at most. Tide times shift irregularly from day to day: around the Moon's first and last quarter by up to 1.5–2 hours, around full and new moon by only about half an hour. On average it's roughly 50 minutes a day.</p>
+    <p><b>When to go.</b> The page works out windows every 10 minutes between first light and dark. It takes the tide exactly and interpolates wind and swell between the 3-hourly forecast points (hence ≈). The best part of a window stays within one point of its peak; the longer “rideable” stretch stays at 3/10 or more. When nothing reaches 3/10, the page shows the best time of the day and why it's weak.</p>
+    <p><b>Wind.</b> The wind state is surf-forecast.com's: for Majanicho, Rocky Point and Playa de Esquinzo the page takes it straight from there, because surf-forecast works it out from the exact wind direction and speed. For the other spots the page works it out from the wind direction against the way the beach faces, and takes glassy from the nearest surf-forecast point. Offshore wind blows from the land out to sea and grooms the waves. Onshore wind blows from the sea onto the land and breaks them up. Cross-shore wind blows along the coast; cross-off and cross-on are in between. With no wind (glassy) the water is smooth. Arrows show where the wind or swell is heading.</p>
+    ${sourcesP("Sources:", "forecasts", "and", "tides")}`
+    }
+  }
+};
+let TX = STR[LANG];
+
+// Wind state words in English (the core's labels are Czech).
+const WS_EN = {off: "offshore", crossoff: "cross-off", cross: "cross-shore", crosson: "cross-on", on: "onshore", glassy: "glassy", unknown: "direction ?"};
+const wsLabel = w => isEN() ? (WS_EN[w.k] || w.label) : w.label;
+// Coasts and spots in English.
+const RG_EN = {
+  sever: {name: "North", tab: "North", sub: "North Shore between Cotillo and Corralejo"},
+  vychod: {name: "East", tab: "East", sub: "Corralejo, the bay facing Lobos"},
+  zapad: {name: "West", tab: "West", sub: "South of El Cotillo"}
+};
+const rgT = r => isEN() ? {...r, ...RG_EN[r.id]} : r;
+const SP_EN = {
+  puntablanca: {type: "A-frame over rocks and sand", level: "Beginners and improvers", tide: ["mid → high and high → mid, worst around low tide"]},
+  majanicho: {type: "Reef and point, two rights", level: "Inside everyone, Outside advanced", tide: ["mid → high and high → mid, around high tide", "low → mid and mid → low, around low tide"]},
+  caleta: {type: "Left over reef", level: "All levels", tide: ["mid → high and high → mid, around high tide"]},
+  flag: {type: "Beach break over sand and rocks", level: "Beginners and improvers", tide: ["mid → high and high → mid, rocks show at low tide"]},
+  rocky: {type: "Reef, right and left", level: "Inside everyone and schools, Outside advanced", tide: ["all tides, most comfortable mid → high and high → mid", "mid → high and high → mid, shallow reef at low tide"]},
+  esquinzo: {type: "Beach break, A-frame", level: "Improvers and advanced", tide: ["all tides, best mid → high and high → mid"]}
+};
+const spType = sp => isEN() ? SP_EN[sp.id].type : sp.type;
+const spLevel = sp => isEN() ? SP_EN[sp.id].level : sp.level;
+const pkTide = (sp, pk) => isEN() ? SP_EN[sp.id].tide[sp.peaks.indexOf(pk)] : pk.tideText;
+
+const GUIDE = {
+  puntablanca: {
+    swellText: "ze Z, SZ, S a SV", windText: "z JV a J, dobrý i z V",
+    swellSector: [253, 49], windSector: [98, 199],
+    rows: [
+      ["Vlna", "A-frame s levými i pravými vlnami. Většinou měkčí a kratší jízdy do 50 m. Při větším S a SZ swellu tu ale umí být silné, dlouhé vlny."],
+      ["Úroveň", "Začátečníci a mírně pokročilí, chodí sem hodně surfových škol."],
+      ["Swell", "Ze Z, SZ, S a SV."],
+      ["Vítr", "Od břehu fouká z JV a J, dobrý je i z V. Běžný pasát ze SV fouká z boku."],
+      ["Dno", "Kameny a písek. Pláž je z bílého korálového „popcornu“, není to písečná pláž."],
+      ["Dav", "Střední, se školami bývá plno."],
+      ["Cesta", "Prašná cesta po severním pobřeží, v polovině mezi Majanichem a majákem El Tostón u Cotilla. Parkuje se v řadě podél cesty. Line-up je daleko od břehu, vede k němu klidný kanál."],
+      ["Předpověď", "surf-forecast.com pro tuhle Punta Blanca vlastní stránku nemá, proto čísla bereme z nejbližšího bodu Majanicho (asi 6 km). Pozor, „Punta Blanca – k16“ na surf-forecast.com je jiný spot na Tenerife. Pro srovnání stránka ukazuje i dobrá okna z mondo.surf, které má pro tuhle Punta Blanca vlastní předpověď z jiného modelu. Výšku vln ani sílu větru z něj nemám, jen okna, periodu a směry."]
+    ],
+    links: [["surf-forecast Majanicho", "https://www.surf-forecast.com/breaks/Majanicho/forecasts/latest"], ["mondo.surf Punta Blanca", "https://www.mondo.surf/surf-spot/punta-blanca/forecast/2367"]]
+  },
+  majanicho: {
+    swellText: "Inside ze SZ, S a SV · Outside ze Z, SZ a S", windText: "z J, dobrý i z JV a V",
+    swellSector: [266, 68], windSector: [89, 197],
+    rows: [
+      ["Vlna", "Spolehlivý reef a point break. Inside: pravá v zátoce, jízdy 50–150 m. Outside: pravá daleko venku, nad 1,5 m masivní."],
+      ["Úroveň", "Inside všechny úrovně. Outside je pro zkušené: chce větší swell a vlny tam bývají přes 1 m, proto ho stránka nehodnotí."],
+      ["Swell", "Nejlépe severní. Inside ze SZ, S a SV, Outside ze Z, SZ a S."],
+      ["Vítr", "Od břehu fouká z J (surf-forecast.com), dobrý je i z JV a V."],
+      ["Dno", "Lávový útes a kameny."],
+      ["Dav", "Inside často plno, na Outside málo lidí."],
+      ["Rizika", "Kameny. Na Outside při větším swellu silné proudy a přes 10 minut pádlování."],
+      ["Sezóna", "Podzim a zima. V říjnu je tu čisto asi 15 % času, 71 % rozfoukané a 14 % moc malé (surf-forecast.com)."],
+      ["Cesta", "Asfalt až do vesnice, parkuje se u moře."]
+    ],
+    links: [["Webkamera Majanicho", "https://www.surf-forecast.com/breaks/Majanicho/webcams/latest"], ["Webkamera El Hierro", "https://www.fuerteventuraplayas.com/en/?p=2295"]]
+  },
+  caleta: {
+    swellText: "ze SZ, S a SV, aspoň kolem 1 m", windText: "z JV, J a JZ",
+    swellSector: [293, 68], windSector: [108, 225],
+    rows: [
+      ["Vlna", "Levá přes útes, velmi spolehlivá, jízdy 150–300 m. Rychlejší než Majanicho a unese větší swell."],
+      ["Úroveň", "Všechny úrovně. Outside při větším swellu jen pro zkušené."],
+      ["Swell", "Ze SZ, S a SV. Rozjede se zhruba od 0,8–1 m."],
+      ["Vítr", "Od břehu fouká z JV, J a JZ."],
+      ["Dno", "Útes a kameny."],
+      ["Dav", "Střední, bývají tu surfové školy."],
+      ["Cesta", "Z Majanicha dál po cestě směrem na Corralejo, hned za mysem."]
+    ],
+    links: [["Webkamera Majanicho (vedle)", "https://www.surf-forecast.com/breaks/Majanicho/webcams/latest"]]
+  },
+  flag: {
+    swellText: "ze S, funguje i ze SZ", windText: "ze Z a JZ",
+    swellSector: [315, 45], windSector: [195, 285],
+    rows: [
+      ["Vlna", "Beach break s několika peaky, levé i pravé. Většinou měkké a pohodové vlny."],
+      ["Úroveň", "Začátečníci a mírně pokročilí, je to jedna z prvních zastávek surfových škol z Corraleja."],
+      ["Swell", "Nejlépe severní, funguje i ze SZ. Swell se sem stáčí kolem cípu u Corraleja, takže vlny jsou tu menší než na severním pobřeží. surfnerd.com uvádí, že funguje zhruba od 0,9 do 2,4 m swellu. V předpovědi Bajo el Medio, kterou tu používáme, vychází takový swell zhruba na polovinu i méně, proto jsou ideální výšky níž."],
+      ["Vítr", "Od břehu fouká ze Z a JZ. Běžný pasát ze S a SV fouká z boku až ke břehu, proto je to hlavně kite pláž. Na surf bývají nejlepší rána, než vítr zesílí."],
+      ["Dno", "Písek s kameny a útesem. Na odlivu vylézají ostré lávové kameny, hodí se boty do vody."],
+      ["Dav", "Školy a kitaři. Přímo před hotely se surfovat nesmí."],
+      ["Sezóna", "Hlavně zima, kdy chodí silné severní swelly."],
+      ["Cesta", "Asi 2 km jižně od centra Corraleja, na začátku dun. Parkuje se zdarma u silnice."],
+      ["Předpověď", "Na webech se tahle pláž často jmenuje Flag Beach. surf-forecast.com pro ni vlastní stránku nemá. Čísla bereme z nejbližšího bodu Bajo el Medio, což je Rocky Point asi 2 km severně. Vlny tu bývají podobné, spíš o něco menší."]
+    ],
+    links: [["surf-forecast Bajo el Medio", "https://www.surf-forecast.com/breaks/Rocky-Point_Bajodel-Medio/forecasts/latest"], ["fuerteventuraplayas Flag Beach", "https://www.fuerteventuraplayas.com/en/spot/flag-beach-kite-beach/"]]
+  },
+  rocky: {
+    swellText: "ze SZ, S a SV, potřebuje silný swell", windText: "z J a JZ",
+    swellSector: [320, 60], windSector: [155, 250],
+    rows: [
+      ["Vlna", "Reef s pravou i levou. Pravá umí být při větším swellu dutá, levá je delší a pohodová, hodí se na longboard. Inside je mírnější, Outside (Punta Elena, asi 200 m dál) je větší a silnější."],
+      ["Úroveň", "Inside všechny úrovně, v malém sem chodí školy. Outside je větší a silnější, vlny tam bývají přes 1 m, proto ho stránka nehodnotí."],
+      ["Swell", "Silný severní swell, který se sem stočí kolem Corraleja. Když je na severu moc velké, tady bývá akorát. Funguje i větrný swell z východu, ten je ale méně čistý. Outside chce podle fuerteventuraplayas.com aspoň 1,5 m swell. V chráněné předpovědi Bajo el Medio vychází takový swell zhruba na polovinu, tedy kolem 0,8 m."],
+      ["Vítr", "Od břehu fouká z J a JZ (surf-forecast.com JZ, mondo.surf J až JZ)."],
+      ["Dno", "Lávový útes a kameny. Na odlivu je mělko a vstup přes kameny, hodí se boty do vody."],
+      ["Dav", "Hodně lidí, je to domácí spot Corraleja a chodí sem školy."],
+      ["Sezóna", "Zima, kdy chodí silné severní swelly. V létě tu bývá často bez vln."],
+      ["Cesta", "Jižní konec Corraleja u pláže Bajo del Medio, pár minut pěšky z centra."],
+      ["Předpověď", "Na surf-forecast.com se tenhle spot jmenuje Bajo el Medio. Výška vln tam vychází menší než na severu, protože místo je chráněné."]
+    ],
+    links: [["surf-forecast Bajo el Medio", "https://www.surf-forecast.com/breaks/Rocky-Point_Bajodel-Medio/forecasts/latest"], ["mondo.surf Rocky Point", "https://www.mondo.surf/surf-spot/rocky-point-2/guide/2387"]]
+  },
+  esquinzo: {
+    swellText: "ze Z, SZ a S", windText: "z V a JV",
+    swellSector: [245, 15], windSector: [70, 160],
+    rows: [
+      ["Vlna", "Beach break, A-frame s levými i pravými vlnami. Otevřená pláž, vlny tu mají sílu: při dlouhé periodě (13 s a víc) působí větší, než napovídá samotná výška."],
+      ["Úroveň", "Mírně pokročilí a pokročilí. Začátečníci jen v malém, je to otevřená pláž."],
+      ["Swell", "Ze Z a SZ, funguje i ze S. Otevřená pláž chytí skoro každý swell."],
+      ["Vítr", "Od břehu fouká z V a JV. Pasát ze SV tu fouká z boku od břehu a severní vítr podél pobřeží. Když je sever rozfoukaný, bývá tady čistší."],
+      ["Dno", "Písek, místy kameny."],
+      ["Dav", "Málo lidí."],
+      ["Rizika", "Při větším swellu silné proudy."],
+      ["Cesta", "Asi 5 km jižně od El Cotilla na západním pobřeží."],
+      ["Předpověď", "Vlastní bod Playa de Esquinzo na surf-forecast.com, přílivy pro Cotillo. Stejně se jmenuje i pláž na jihu ostrova u Jandíe, tady jde o tu u Cotilla."]
+    ],
+    links: [["surf-forecast Playa de Esquinzo", "https://www.surf-forecast.com/breaks/Playade-Esquinzo_1/forecasts/latest"], ["mondo.surf Playa de Esquinzo", "https://www.mondo.surf/surf-spot/playa-de-esquinzo/guide/2385"]]
+  }
+};
+// The same spot guide in English (the swell and wind sectors stay in GUIDE).
+const GUIDE_EN = {
+  puntablanca: {
+    swellText: "from the W, NW, N and NE", windText: "from the SE and S, also good from the E",
+    rows: [
+      ["Wave", "A-frame with lefts and rights. Mostly softer, shorter rides of up to 50 m, but a bigger N or NW swell can bring powerful, long waves."],
+      ["Level", "Beginners and improvers; lots of surf schools come here."],
+      ["Swell", "From the W, NW, N and NE."],
+      ["Wind", "Offshore from the SE and S, also good from the E. The usual NE trade wind blows cross-shore."],
+      ["Bottom", "Rocks and sand. The beach is white coral “popcorn”, not sand."],
+      ["Crowd", "Medium; busy when the schools are in."],
+      ["Access", "Dirt track along the north coast, halfway between Majanicho and the El Tostón lighthouse near Cotillo. Park in a row along the track. The line-up is far out; a calm channel leads to it."],
+      ["Forecast", "surf-forecast.com has no page for this Punta Blanca, so the numbers come from the nearest point, Majanicho (about 6 km away). Note that “Punta Blanca – k16” on surf-forecast.com is a different spot on Tenerife. For comparison the page also shows the good windows from mondo.surf, which has its own forecast for this Punta Blanca from a different model. It only gives me the windows, period and directions, not wave height or wind speed."]
+    ],
+    links: [["surf-forecast Majanicho", "https://www.surf-forecast.com/breaks/Majanicho/forecasts/latest"], ["mondo.surf Punta Blanca", "https://www.mondo.surf/surf-spot/punta-blanca/forecast/2367"]]
+  },
+  majanicho: {
+    swellText: "Inside from the NW, N and NE · Outside from the W, NW and N", windText: "from the S, also good from the SE and E",
+    rows: [
+      ["Wave", "Reliable reef and point break. Inside: a right in the bay, rides of 50–150 m. Outside: a right far out, massive above 1.5 m."],
+      ["Level", "Inside all levels. Outside is for experienced surfers: it needs a bigger swell and its waves are usually over 1 m, so the page doesn't score it."],
+      ["Swell", "Best from the north. Inside from the NW, N and NE, Outside from the W, NW and N."],
+      ["Wind", "Offshore from the S (surf-forecast.com), also good from the SE and E."],
+      ["Bottom", "Lava reef and rocks."],
+      ["Crowd", "Inside often busy, few people at Outside."],
+      ["Hazards", "Rocks. At Outside, strong currents in bigger swell and a paddle of more than 10 minutes."],
+      ["Season", "Autumn and winter. In October it's clean about 15% of the time, blown out 71% and too small 14% (surf-forecast.com)."],
+      ["Access", "Paved road all the way to the village; park by the sea."]
+    ],
+    links: [["Majanicho webcam", "https://www.surf-forecast.com/breaks/Majanicho/webcams/latest"], ["El Hierro webcam", "https://www.fuerteventuraplayas.com/en/?p=2295"]]
+  },
+  caleta: {
+    swellText: "from the NW, N and NE, at least about 1 m", windText: "from the SE, S and SW",
+    rows: [
+      ["Wave", "A left over reef, very reliable, rides of 150–300 m. Faster than Majanicho and holds a bigger swell."],
+      ["Level", "All levels. Outside in a bigger swell for experienced surfers only."],
+      ["Swell", "From the NW, N and NE. Starts working from about 0.8–1 m."],
+      ["Wind", "Offshore from the SE, S and SW."],
+      ["Bottom", "Reef and rocks."],
+      ["Crowd", "Medium; surf schools come here."],
+      ["Access", "From Majanicho carry on along the track towards Corralejo, just past the headland."]
+    ],
+    links: [["Majanicho webcam (next door)", "https://www.surf-forecast.com/breaks/Majanicho/webcams/latest"]]
+  },
+  flag: {
+    swellText: "from the N, also works from the NW", windText: "from the W and SW",
+    rows: [
+      ["Wave", "Beach break with several peaks, lefts and rights. Mostly soft, mellow waves."],
+      ["Level", "Beginners and improvers; one of the first stops for surf schools from Corralejo."],
+      ["Swell", "Best from the north, also works from the NW. The swell wraps in around the Corralejo headland, so the waves are smaller than on the north shore. surfnerd.com says it works with roughly 0.9 to 2.4 m of swell. The Bajo el Medio forecast used here shows such a swell at about half that or less, so the ideal heights are lower."],
+      ["Wind", "Offshore from the W and SW. The usual N and NE trade wind blows cross- to onshore, which is why it's mainly a kite beach. Mornings are usually best for surfing, before the wind picks up."],
+      ["Bottom", "Sand with rocks and reef. Sharp lava rocks show up at low tide; reef booties help."],
+      ["Crowd", "Schools and kiters. No surfing right in front of the hotels."],
+      ["Season", "Mainly winter, when the strong north swells arrive."],
+      ["Access", "About 2 km south of Corralejo centre, where the dunes begin. Free parking by the road."],
+      ["Forecast", "Online this beach is often called Flag Beach. surf-forecast.com has no page for it, so the numbers come from the nearest point, Bajo el Medio, which is Rocky Point about 2 km north. The waves here are similar, if anything a bit smaller."]
+    ],
+    links: [["surf-forecast Bajo el Medio", "https://www.surf-forecast.com/breaks/Rocky-Point_Bajodel-Medio/forecasts/latest"], ["fuerteventuraplayas Flag Beach", "https://www.fuerteventuraplayas.com/en/spot/flag-beach-kite-beach/"]]
+  },
+  rocky: {
+    swellText: "from the NW, N and NE, needs a strong swell", windText: "from the S and SW",
+    rows: [
+      ["Wave", "Reef with a right and a left. The right can get hollow in a bigger swell; the left is longer and mellow, good for longboards. Inside is gentler; Outside (Punta Elena, about 200 m further out) is bigger and more powerful."],
+      ["Level", "Inside all levels, schools come here when it's small. Outside is bigger and more powerful, with waves usually over 1 m, so the page doesn't score it."],
+      ["Swell", "A strong north swell that wraps around Corralejo. When the north is too big, it's often just right here. An east wind swell also works but is less clean. According to fuerteventuraplayas.com, Outside needs at least a 1.5 m swell. The sheltered Bajo el Medio forecast shows such a swell at about half, around 0.8 m."],
+      ["Wind", "Offshore from the S and SW (surf-forecast.com SW, mondo.surf S to SW)."],
+      ["Bottom", "Lava reef and rocks. Shallow at low tide with a rocky entry; reef booties help."],
+      ["Crowd", "Lots of people; it's Corralejo's home break and schools come here."],
+      ["Season", "Winter, when the strong north swells arrive. Often flat in summer."],
+      ["Access", "South end of Corralejo by Bajo del Medio beach, a few minutes' walk from the centre."],
+      ["Forecast", "On surf-forecast.com this spot is called Bajo el Medio. Wave heights there come out smaller than in the north because the spot is sheltered."]
+    ],
+    links: [["surf-forecast Bajo el Medio", "https://www.surf-forecast.com/breaks/Rocky-Point_Bajodel-Medio/forecasts/latest"], ["mondo.surf Rocky Point", "https://www.mondo.surf/surf-spot/rocky-point-2/guide/2387"]]
+  },
+  esquinzo: {
+    swellText: "from the W, NW and N", windText: "from the E and SE",
+    rows: [
+      ["Wave", "Beach break, A-frame with lefts and rights. It's an open beach and the waves have power: with a long period (13 s or more) they feel bigger than the height alone suggests."],
+      ["Level", "Improvers and advanced. Beginners only when it's small; it's an exposed beach."],
+      ["Swell", "From the W and NW, also works from the N. The open beach picks up almost any swell."],
+      ["Wind", "Offshore from the E and SE. The NE trade wind blows cross-offshore here and a north wind blows along the coast. When the north shore is blown out, it's often cleaner here."],
+      ["Bottom", "Sand, rocks in places."],
+      ["Crowd", "Few people."],
+      ["Hazards", "Strong currents in a bigger swell."],
+      ["Access", "About 5 km south of El Cotillo on the west coast."],
+      ["Forecast", "Its own Playa de Esquinzo point on surf-forecast.com, tides for Cotillo. A beach with the same name lies in the south of the island near Jandía; this is the one near Cotillo."]
+    ],
+    links: [["surf-forecast Playa de Esquinzo", "https://www.surf-forecast.com/breaks/Playade-Esquinzo_1/forecasts/latest"], ["mondo.surf Playa de Esquinzo", "https://www.mondo.surf/surf-spot/playa-de-esquinzo/guide/2385"]]
+  }
+};
+const guideT = id => isEN() ? GUIDE_EN[id] : GUIDE[id];
+const TIDE_NOTE = {
+  puntablanca: "Podle místní zkušenosti. Kolem vrcholu odlivu je to tu nejhorší, hodnocení se tam sráží zhruba na třetinu. Online zdroje se liší: mondo.surf a Lobos Surf Camp uvádějí všechny fáze, Fuerteventura Surf School odliv až střední vodu.",
+  majanicho: "Rozdělení na Inside a Outside je podle mondo.surf, Fuerteventura Surf School uvádí pro Majanicho mid až high. surf-forecast.com píše, že se surfuje na všech fázích.",
+  caleta: "Podle mondo.surf. Na vyšší vodě je vlna měkčí a pomalejší, na nízké rychlejší a strmější.",
+  flag: "Podle Fuerteventura Surf School a fuerteventuraplayas.com mid až high, na odlivu vylézají ostré kameny. surfnerd.com píše, že jde i na ostatních fázích, nejlíp na stoupající vodě.",
+  rocky: "mondo.surf a fuerteventuraplayas.com uvádějí všechny fáze. Na odlivu je ale mělko a do vody se jde přes kameny, proto stránka odliv mírně penalizuje.",
+  esquinzo: "surf-forecast.com uvádí nejlépe kolem přílivu, mondo.surf všechny fáze. Stránka proto odliv penalizuje jen mírně."
+};
+const TIDE_NOTE_EN = {
+  puntablanca: "From local experience. It's at its worst around dead low tide, where the score drops to about a third. Online sources differ: mondo.surf and Lobos Surf Camp list all tides, Fuerteventura Surf School low to mid.",
+  majanicho: "The Inside/Outside split follows mondo.surf; Fuerteventura Surf School gives mid to high for Majanicho. surf-forecast.com says it works on all tides.",
+  caleta: "According to mondo.surf. On higher water the wave is softer and slower, on low water faster and steeper.",
+  flag: "Mid to high according to Fuerteventura Surf School and fuerteventuraplayas.com; sharp rocks show up at low tide. surfnerd.com says it also works on other tides, best on a rising tide.",
+  rocky: "mondo.surf and fuerteventuraplayas.com list all tides. At low tide it's shallow and you get in over rocks, so the page penalises low tide a little.",
+  esquinzo: "surf-forecast.com says best around high tide, mondo.surf all tides. So the page penalises low tide only a little."
+};
+
+// Forecast points (one surf-forecast.com page each) with their slots and the tide station they use.
+let DATA = null, POINTS = {}, current = "puntablanca", dbState = "loading", CACHE = {};
+const LAST = {}; // last opened spot per region
+// All scores are for intermediate surfers; the spot facts also list what suits beginners.
+const LEVEL = "int";
+try { const s = localStorage.getItem("ns_spot"); if (SPOTS.some(x => x.id === s)) current = s; } catch (e) {}
+const pointOf = sp => POINTS[sp.point] || null;
+const slotsOf = sp => (POINTS[sp.point] || {}).S || [];
+const tidesOf = sp => (POINTS[sp.point] || {}).T || [];
+const allSlots = () => Object.values(POINTS).flatMap(p => p.S);
+const regionOf = sp => rgT(REGIONS.find(r => r.id === sp.region) || REGIONS[0]);
+const spotsIn = rid => SPOTS.filter(s => s.region === rid);
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"}[c]));
+const fmt = (n, dp) => (dp == null ? String(n) : Number(n).toFixed(dp)).replace(".", TX.dec);
+// Compass point of a 16-wind key: Czech letters (S, SSV …) or the English key itself (N, NNE …).
+const dn = k => (isEN() ? (k in DIRS ? k : "") : CZ[k]) || "?";
+const KEYS16 = Object.keys(DIRS);
+const degKey = deg => { if (!isFinite(deg)) return null; let b = KEYS16[0]; for (const k of KEYS16) if (angDiff(deg, DIRS[k]) < angDiff(deg, DIRS[b])) b = k; return b; };
+const SLOT_HALF = 90 * 60000;
+const phaseOf = td => td ? PHASE_TXT[td.phase] : "";
+const bandTxt = v => TX.band[band(v)];
+// Ideal ranges as text, and how well a value fits (cell tints in the surf table).
+const hgtText = h => `${fmt(h.lo, 1)}–${fmt(h.hi, 1)} m`;
+const kjText = k => k.lo && k.hi ? `${k.lo}–${k.hi} kJ` : k.hi ? `${TX.upTo} ${k.hi} kJ` : `${TX.fromK} ${k.lo} kJ`;
+const fitCls = f => f >= 0.95 ? "good" : f >= 0.6 ? "ok" : "bad";
+// The model run as written by the update (Czech, e.g. "po 19. 10. 06:00"), in English "Mon 19/10 06:00".
+const WD_EN = {"po": "Mon", "út": "Tue", "st": "Wed", "čt": "Thu", "pá": "Fri", "so": "Sat", "ne": "Sun"};
+function issuedTxt(s) {
+  if (!s) return "?";
+  if (!isEN()) return s;
+  const m = String(s).match(/^(\S+)\s+(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{1,2}:\d{2})$/);
+  return m && WD_EN[m[1]] ? `${WD_EN[m[1]]} ${m[2]}/${m[3]} ${m[4]}` : s;
+}
+
+function validSlots(raw) {
+  return (Array.isArray(raw) ? raw : []).filter(s => s && /^\d{4}-\d{2}-\d{2}$/.test(s.d) && /^\d{2}:\d{2}$/.test(s.t)
+    && isFinite(s.h) && isFinite(s.p) && isFinite(s.w)).map(s => ({...s, h: +s.h, p: +s.p, w: +s.w, kj: isFinite(s.kj) ? +s.kj : NaN, sf: isFinite(s.sf) ? +s.sf : null}));
+}
+function todayLocal() { return localParts(Date.now()).d; }
+function addDays(d, n) { const [Y, M, D] = d.split("-").map(Number); return new Date(Date.UTC(Y, M - 1, D + n)).toISOString().slice(0, 10); }
+function dayLabel(d) {
+  const t = todayLocal(); const wd = new Date(d + "T12:00:00Z").toLocaleDateString(TX.locale, {weekday: "long", day: "numeric", month: "numeric", timeZone: "UTC"}).replace(/,/g, ""); // en-GB adds a comma
+  const rel = d === t ? TX.today : d === addDays(t, 1) ? TX.tomorrow : d === addDays(t, 2) ? TX.dayAfter : "";
+  return {rel, wd};
+}
+const wdShort = d => new Date(d + "T12:00:00Z").toLocaleDateString(TX.locale, {weekday: "short", timeZone: "UTC"});
+const dayShort = d => dayLabel(d).rel || wdShort(d);
+// The day inside a sentence: "dnes", "zítra", "st" / "today", "tomorrow", "Wed".
+const dayInline = d => { const l = dayLabel(d); return l.rel ? l.rel.toLowerCase() : isEN() ? wdShort(d) : wdShort(d).toLowerCase(); };
+const dayId = d => d.replace(/-/g, "");
+
+function arrowSvg(fromDeg, cls) {
+  if (!isFinite(fromDeg)) return "";
+  // The base arrow points down (south). Rotating it by the "from" bearing makes it point downwind / down-swell.
+  const r = fromDeg % 360;
+  return `<svg class="arr ${cls || ""}" viewBox="0 0 16 16" aria-hidden="true"><g transform="rotate(${r} 8 8)"><path d="M8 2v11M4.5 9.5 8 13l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></g></svg>`;
+}
+
+const ICON_SWELL = `<svg viewBox="0 0 28 18" aria-hidden="true"><path d="M3 16a11 11 0 0 1 22 0M8 16a6 6 0 0 1 12 0" fill="none" stroke="var(--sea)" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+const ICON_WIND = `<svg viewBox="0 0 28 18" aria-hidden="true"><path d="M3 9h19M17 4l6 5-6 5" fill="none" stroke="var(--wind)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const ICON_NOW = `<svg viewBox="0 0 28 18" aria-hidden="true"><path d="M3 9h18" fill="none" stroke="var(--ink)" stroke-width="2.4" stroke-dasharray="5 3.5" stroke-linecap="round"/><path d="M17 4l6 5-6 5" fill="none" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+// ---------- Site diagram: sea, land, ideal swell crests, ideal (offshore) wind, forecast wind ----------
+function P(cx, cy, b, R) { const a = b * Math.PI / 180; return [cx + R * Math.sin(a), cy - R * Math.cos(a)]; }
+const pt = p => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
+const sectorWidth = (a, b) => ((b - a) % 360 + 360) % 360;
+function diagram(spot, focus) {
+  const g = GUIDE[spot.id], cx = 150, cy = 150, r = 112, f = spot.face;
+  const u = P(0, 0, f + 90, 1), n = P(0, 0, f, 1); const coast = [];
+  for (let i = 0; i <= 40; i++) {
+    const t = -1 + i / 20, wob = 4.5 * Math.sin(t * Math.PI * 3) * (1 - t * t);
+    coast.push([cx + t * r * u[0] + wob * n[0], cy + t * r * u[1] + wob * n[1]]);
+  }
+  const coastD = "M" + coast.map(pt).join("L");
+  const landD = coastD + `A${r} ${r} 0 0 1 ${pt(P(cx, cy, f + 180, r))}A${r} ${r} 0 0 1 ${pt(P(cx, cy, f + 270, r))}Z`;
+  const [s1, s2] = g.swellSector, sw = sectorWidth(s1, s2);
+  const crests = [0.9, 0.74, 0.58].map((k, i) => `<path d="M${pt(P(cx, cy, s1, r * k))}A${r * k} ${r * k} 0 ${sw > 180 ? 1 : 0} 1 ${pt(P(cx, cy, s2, r * k))}" fill="none" stroke="var(--sea)" stroke-width="${3.4 - i * 0.5}" stroke-linecap="round" opacity="${0.55 + i * 0.2}"/>`).join("");
+  const swellFan = `<path d="M${pt(P(cx, cy, s1, r))}A${r} ${r} 0 ${sw > 180 ? 1 : 0} 1 ${pt(P(cx, cy, s2, r))}L${cx} ${cy}Z" fill="var(--sea)" opacity=".12"/>`;
+  const [w1, w2] = g.windSector, ww = sectorWidth(w1, w2), wc = w1 + ww / 2;
+  const windFan = `<path d="M${pt(P(cx, cy, w1, r))}A${r} ${r} 0 ${ww > 180 ? 1 : 0} 1 ${pt(P(cx, cy, w2, r))}L${cx} ${cy}Z" fill="var(--wind)" opacity=".13"/>`;
+  const lat = P(0, 0, wc + 90, 1);
+  const windArrows = [-34, 0, 34].map(o => {
+    const a = P(cx, cy, wc, r * 0.8), b = P(cx, cy, wc + 180, r * 0.22);
+    return `<line x1="${(a[0] + o * lat[0]).toFixed(1)}" y1="${(a[1] + o * lat[1]).toFixed(1)}" x2="${(b[0] + o * lat[0]).toFixed(1)}" y2="${(b[1] + o * lat[1]).toFixed(1)}" stroke="var(--wind)" stroke-width="3" stroke-linecap="round" marker-end="url(#ah-wind-${spot.id})"/>`;
+  }).join("");
+  let now = "";
+  if (focus && focus.s.w > 5 && isFinite(DIRS[focus.s.wd])) {
+    const a = P(cx, cy, DIRS[focus.s.wd], r * 0.97), b = P(cx, cy, DIRS[focus.s.wd], r * 0.16);
+    now = `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="var(--ink)" stroke-width="2.6" stroke-dasharray="7 5" stroke-linecap="round" marker-end="url(#ah-now-${spot.id})"/>`;
+  }
+  const card = TX.compass.map(([l, b]) => { const p = P(cx, cy, b, r + 17); return `<text x="${p[0].toFixed(1)}" y="${(p[1] + 4.5).toFixed(1)}" text-anchor="middle" class="dg-card">${l}</text>`; }).join("");
+  const nb = focus && focus.s.w > 5 ? DIRS[focus.s.wd] : NaN;
+  const seaB = [f + 50, f - 50, f + 28, f - 28].reduce((a, b) => (isFinite(nb) && angDiff(b, nb) > angDiff(a, nb)) ? b : a);
+  const seaL = P(cx, cy, seaB, r * 0.38), landL = P(cx, cy, f + 180 + 64, r * 0.56);
+  return `<svg class="dg" viewBox="0 0 300 300" role="img" aria-label="${esc(TX.dgAria(spot.name))}">
+    <defs>
+      <marker id="ah-wind-${spot.id}" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--wind)"/></marker>
+      <marker id="ah-now-${spot.id}" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.6" markerHeight="4.6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ink)"/></marker>
+      <clipPath id="clip-${spot.id}"><circle cx="${cx}" cy="${cy}" r="${r}"/></clipPath>
+    </defs>
+    <g clip-path="url(#clip-${spot.id})">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="var(--sea-tint)"/>
+      ${swellFan}${crests}
+      <path d="${landD}" fill="var(--land)"/>
+      ${windFan}
+      <path d="${coastD}" fill="none" stroke="var(--coast)" stroke-width="2.4" stroke-linejoin="round"/>
+      ${windArrows}${now}
+    </g>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+    <circle cx="${cx}" cy="${cy}" r="7" fill="var(--ink)" stroke="var(--surface)" stroke-width="2.5"/>
+    <text x="${seaL[0].toFixed(1)}" y="${seaL[1].toFixed(1)}" text-anchor="middle" class="dg-lbl sea">${TX.ocean}</text>
+    <text x="${landL[0].toFixed(1)}" y="${landL[1].toFixed(1)}" text-anchor="middle" class="dg-lbl land">${TX.land}</text>
+    ${card}
+  </svg>`;
+}
+
+// ---------- Scoring helpers (cached per render) ----------
+function scored(spot) {
+  const k = "s:" + spot.id; if (CACHE[k]) return CACHE[k];
+  const now = Date.now(), T = tidesOf(spot);
+  return CACHE[k] = slotsOf(spot).map(s => ({s, ...scoreSlot(spot, s, T, LEVEL), past: s.ms + SLOT_HALF < now}));
+}
+function timeline(spot, d) {
+  const k = "t:" + spot.id + d; if (CACHE[k]) return CACHE[k];
+  return CACHE[k] = dayScores(spot, slotsOf(spot), tidesOf(spot), d, LEVEL);
+}
+function windows(spot, d) {
+  const k = "w:" + spot.id + d; if (CACHE[k]) return CACHE[k];
+  return CACHE[k] = rideWindows(spot, slotsOf(spot), tidesOf(spot), d, 3, timeline(spot, d), LEVEL);
+}
+// Windows over what is left of the day only, so a window that is already running gets its best part recomputed.
+function windowsFrom(spot, d, from) {
+  const k = "f:" + spot.id + d + Math.floor(from / STEP); if (CACHE[k]) return CACHE[k];
+  return CACHE[k] = rideWindows(spot, slotsOf(spot), tidesOf(spot), d, 3, timeline(spot, d).filter(x => x.ms > from - STEP), LEVEL);
+}
+const spotDays = sp => [...new Set(slotsOf(sp).map(s => s.d))];
+const dataDays = () => [...new Set(allSlots().map(s => s.d))].sort();
+const visDays = () => dataDays().filter(d => d >= todayLocal()); // days already over are not shown
+function focusRow(rows) { return rows.find(r => !r.past && r.v != null) || rows.filter(r => r.v != null).slice(-1)[0] || null; }
+// A range that has started reads "teď–…" / "now–…"; one that is already over keeps its own times.
+function rangeText(a, b) { const now = Date.now(); return (a <= now && now < b ? TX.now : hm(a)) + "–" + hm(b); }
+// Conditions of a window as small chips, tinted like the surf table: green fits, amber is OK, red does not fit.
+const WIND_FIT = {off: "good", crossoff: "good", glassy: "good", cross: "ok", crosson: "bad", on: "bad"};
+function condChips(w) {
+  const c = w.cond, F = w.F || {}, td = w.tide, f = k => fitCls(isFinite(F[k]) ? F[k] : 1);
+  const chip = (cls, icon, text, title, sr) => `<span class="cc ${cls}"${title ? ` title="${esc(title)}"` : ""}>${icon}<span>${sr ? `<span class="sr">${esc(sr)} </span>` : ""}${esc(text)}</span></span>`;
+  // Two rows: the swell itself, then wind and water. The wind chip gives speed and wind state (the compass point is
+  // in its tooltip and in the table), the water chip just the phase, so the second row fits on a 360 px phone.
+  const swell = [chip(f("h"), ICON_WAVE, `${fmt(c.h, 1)} m · ${Math.round(c.p)} s`, TX.tHP),
+    isFinite(c.kj) ? chip(f("e"), ICON_BOLT, `${Math.round(c.kj)} kJ`, TX.tKj) : "",
+    chip(f("d"), ICON_SW, TX.swellFrom(dn(degKey(c.sdDeg))))].join("");
+  const glassy = w.wind.k === "glassy";
+  const rest = [chip(WIND_FIT[w.wind.k] || "", ICON_WD, glassy ? TX.glassy : `${Math.round(c.w)} km/h · ${wsLabel(w.wind)}`, glassy ? TX.windSr : TX.windFrom(dn(degKey(c.wdDeg))), TX.windSr),
+    td ? chip(f("t"), ICON_TIDE, phaseOf(td), TX.tideTitle, TX.tideSr) : ""].join("");
+  return `<span class="cond"><span class="crow">${swell}</span><span class="crow">${rest}</span></span>`;
+}
+// Second opinion from another forecaster (now mondo.surf for Punta Blanca): only its good windows per day.
+const QCZ = {"epic": "skvělé", "very good": "velmi dobré", "good": "dobré", "fair": "slušné", "poor": "slabé"};
+const qTxt = q => { const k = String(q || "").toLowerCase(); return isEN() ? k : QCZ[k] || String(q || ""); };
+function compareFor(spot) {
+  const c = DATA && DATA.compare;
+  if (!c || c.spot !== spot.id || !Array.isArray(c.windows)) return null;
+  const ok = w => w && /^\d{4}-\d{2}-\d{2}$/.test(w.d) && /^\d{2}:\d{2}$/.test(w.a) && /^\d{2}:\d{2}$/.test(w.b);
+  return {...c, days: Array.isArray(c.days) ? c.days : [], windows: c.windows.filter(ok)};
+}
+function cmpText(c, d) {
+  const ws = c.windows.filter(w => w.d === d);
+  if (!ws.length) return TX.noGood;
+  return ws.map(w => `${w.a}–${w.b} ${qTxt(w.q)}${isFinite(w.sp) ? ", " + TX.cmpSwell(Math.round(w.sp), dn(w.sd)) : ""}${w.wd ? ", " + TX.cmpWind(dn(w.wd)) : ""}`).join(" · ");
+}
+
+// ---------- Tide chart for one day: daylight, tide curve (thick = ideal water), riding windows, model points ----------
+function tideChart(spot, d, rows, wins) {
+  const X0 = toInstant(d, "06:00"), X1 = toInstant(d, "21:00"), W = 900, H = 90, top = 6, bot = 52;
+  const TIDES = tidesOf(spot), lvl = TIDES.length ? TIDES.map(e => e.m) : [1];
+  const lo = Math.min(...lvl) - 0.12, hi = Math.max(...lvl) + 0.12;
+  const x = ms => (ms - X0) / (X1 - X0) * W, y = m => bot - (m - lo) / Math.max(0.5, hi - lo) * (bot - top);
+  const s = sunEvents(d); let shade = "";
+  shade += `<rect x="0" y="0" width="${x(s.dawn).toFixed(1)}" height="${H}" fill="var(--night)"/>`;
+  shade += `<rect x="${x(s.dawn).toFixed(1)}" y="0" width="${(x(s.rise) - x(s.dawn)).toFixed(1)}" height="${H}" fill="var(--twilight)"/>`;
+  shade += `<rect x="${x(s.set).toFixed(1)}" y="0" width="${(x(s.dusk) - x(s.set)).toFixed(1)}" height="${H}" fill="var(--twilight)"/>`;
+  shade += `<rect x="${x(s.dusk).toFixed(1)}" y="0" width="${(W - x(s.dusk)).toFixed(1)}" height="${H}" fill="var(--night)"/>`;
+  const pts = []; for (let ms = X0; ms <= X1; ms += 5 * 60000) { const td = tideAt(TIDES, ms); if (td) pts.push({ms, X: x(ms), Y: y(td.m), td}); }
+  const path = P2 => P2.length ? "M" + P2.map(p => p.X.toFixed(1) + " " + p.Y.toFixed(1)).join("L") : "";
+  const area = pts.length ? path(pts) + `L${pts[pts.length - 1].X.toFixed(1)} ${bot}L${pts[0].X.toFixed(1)} ${bot}Z` : "";
+  // Thick segments where the tide is ideal for each peak.
+  let ideal = "";
+  peaksFor(spot, LEVEL).forEach((pk, i) => {
+    const col = i === 0 ? "var(--sea)" : "var(--coast)"; let seg = [];
+    const flush = () => { if (seg.length > 1) ideal += `<path d="${path(seg)}" fill="none" stroke="${col}" stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`; seg = []; };
+    pts.forEach(p => { if (tideFactor(pk, p.td) >= 1) seg.push(p); else flush(); }); flush();
+  });
+  // Score ribbon along the bottom for the whole of daylight, so it is there even on days with no window:
+  // grey = weak, amber = rideable, green = worth it; solid colour = the best part of a window.
+  const tl = timeline(spot, d), inCore = ms => wins.some(w => ms >= w.coreA && ms <= w.coreB);
+  let bars = "", seg = null;
+  const flushR = () => { if (seg) bars += `<rect x="${x(seg.a).toFixed(1)}" y="${bot + 12}" width="${Math.max(2, x(seg.b) - x(seg.a)).toFixed(1)}" height="10" fill="${seg.k === "poor" ? "var(--poor-bar)" : `var(--${seg.k}-bg)`}" opacity="${seg.op}"/>`; seg = null; };
+  tl.forEach(p => {
+    if (p.raw == null) { flushR(); return; }
+    const k = band(Math.round(p.raw)), op = k === "poor" || inCore(p.ms) ? 1 : 0.45, end = Math.min(p.ms + STEP, s.dusk);
+    if (seg && seg.k === k && seg.op === op) seg.b = end; else { flushR(); seg = {a: p.ms, b: end, k, op}; }
+  });
+  flushR();
+  // On days where nothing reaches 3/10, outline the best stretch of the day so it is clear when to go anyway.
+  const weakBest = !wins.length ? bestStretch(tl) : null;
+  if (weakBest) bars += `<rect x="${x(weakBest.a).toFixed(1)}" y="${bot + 11}" width="${Math.max(6, x(weakBest.b + STEP) - x(weakBest.a)).toFixed(1)}" height="12" fill="none" stroke="var(--ink)" stroke-width="2.5" vector-effect="non-scaling-stroke"/>`;
+  // Thin dark bar at the very bottom: the other forecaster's good windows, for comparison.
+  const cmp = compareFor(spot); let cmpBars = "";
+  if (cmp && cmp.days.includes(d)) cmp.windows.filter(w => w.d === d).forEach(w => {
+    const a = toInstant(d, w.a), b = toInstant(d, w.b);
+    cmpBars += `<rect x="${x(a).toFixed(1)}" y="${bot + 28}" width="${Math.max(4, x(b) - x(a)).toFixed(1)}" height="6" rx="3" fill="var(--ink)" opacity=".75"/>`;
+  });
+  const nowMs = Date.now(); const nowLine = nowMs > X0 && nowMs < X1 ? `<line x1="${x(nowMs).toFixed(1)}" x2="${x(nowMs).toFixed(1)}" y1="0" y2="${H}" stroke="var(--bad)" stroke-width="2" vector-effect="non-scaling-stroke"/>` : "";
+  const dots = rows.map(r => r.tide ? `<span class="tc-dot ${band(r.v)}" style="left:${(x(r.ms) / W * 100).toFixed(2)}%;top:${(y(r.tide.m) / H * 100).toFixed(2)}%" title="${esc(r.s.t)}"></span>` : "").join("");
+  const ticks = [6, 9, 12, 15, 18, 21].map(h => `<span style="left:${(x(toInstant(d, pad(h) + ":00")) / W * 100).toFixed(2)}%">${h}</span>`).join("");
+  return `<div class="tc"><div class="tc-plot"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${shade}<path d="${area}" fill="var(--sea)" opacity=".12"/><path d="${path(pts)}" fill="none" stroke="var(--muted)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>${ideal}${bars}${cmpBars}${nowLine}</svg>${dots}</div><div class="tc-axis">${ticks}</div></div>`;
+}
+
+// ---------- Renderers ----------
+function renderMeta() {
+  const u = $("updated"), n = $("note"), warn = $("stale"), nb = $("notebox");
+  if (!DATA) {
+    u.textContent = dbState === "loading" ? TX.loading : dbState === "empty" ? TX.empty : dbState === "error" ? TX.error : TX.noDb;
+    n.textContent = ""; warn.hidden = true; if (nb) nb.hidden = true; return;
+  }
+  const upd = Date.parse(DATA.updatedAt);
+  const when = isFinite(upd) ? new Date(upd).toLocaleString(TX.locale, {weekday: "short", day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit", timeZone: TZ}).replace(/,/g, "") : "?";
+  const wt = isFinite(DATA.waterTemp) ? TX.water(fmt(DATA.waterTemp), TX.wetsuit(+DATA.waterTemp)) : "";
+  // Each part stays on one line, so dates never break in the middle.
+  const nw = t => `<span class="nw">${esc(t)}</span>`;
+  u.innerHTML = [nw(TX.updated(when)), nw(TX.model) + " " + nw(TX.issued(issuedTxt(DATA.issued))), wt ? nw(wt) : ""].filter(Boolean).join(" · ");
+  // The comment comes from the update in both languages; an English page without an English comment hides the box.
+  const note = isEN() ? DATA.noteEn : DATA.note;
+  n.textContent = note || "";
+  if (nb) nb.hidden = !note;
+  const all = allSlots(), last = all.length ? Math.max(...all.map(s => s.ms)) : 0, age = Date.now() - upd;
+  if (!all.length || last + SLOT_HALF < Date.now()) { warn.hidden = false; warn.textContent = TX.expired; }
+  else if (age > 30 * 3600000) { warn.hidden = false; warn.textContent = TX.old(Math.floor(age / 86400000) || 1); }
+  else warn.hidden = true;
+}
+// The first day after today that has a riding window, with its best window.
+function nextGood(spot, today) {
+  for (const d of spotDays(spot)) {
+    if (d <= today) continue;
+    const ws = windows(spot, d); if (!ws.length) continue;
+    return {d, w: bestWindow(ws)};
+  }
+  return null;
+}
+// Verdict cards: always for the current local day (they switch over at midnight on their own), grouped by coast.
+function bestCard(sp, today, now, dusk) {
+  const cmpC = compareFor(sp);
+  const cmpLine = cmpC && cmpC.days.includes(today) ? `<span class="bcmp">${esc(TX.cmpToday(cmpText(cmpC, today)))}</span>` : "";
+  const nx = nextGood(sp, today);
+  const nextLine = nx ? `<span class="bnext"><span class="lk">${TX.nextGood}</span><span><b>${esc(dayShort(nx.d))} ${hm(nx.w.coreA)}–${hm(nx.w.coreB)}</b> · ${nx.w.v}/10${sp.peaks.length > 1 ? " · " + esc(nx.w.peak.name) : ""}</span></span>` : "";
+  const nxDay = nx ? ` data-day="${dayId(nx.d)}"` : "";
+  const name = `<span class="bname">${esc(sp.name)}</span>`;
+  if (!spotDays(sp).includes(today)) {
+    return `<button class="bcard" data-spot="${sp.id}"${nxDay}>${name}<span class="bcond">${TX.noToday}</span>${nextLine}</button>`;
+  }
+  const done = windows(sp, today).filter(w => w.b < now), left = windowsFrom(sp, today, now);
+  if (!left.length) {
+    const st = now > dusk ? null : stretchFor(sp, today);
+    const doneNote = done.length ? (() => { const p = bestWindow(done); return `<span class="bcond">${TX.doneWin(hm(p.coreA), hm(p.coreB), p.v)}</span>`; })() : "";
+    if (!st) {
+      return `<button class="bcard" data-spot="${sp.id}"${nxDay}>${name}
+        <span class="bline"><span class="score dark">–</span><span class="bwhen">${TX.darkNow}</span></span>
+        ${doneNote}${nextLine}</button>`;
+    }
+    const weak = st.v < 3;
+    const verdict = weak ? (st.whole ? TX.weakRest : TX.weakBest) : TX.brief(bandTxt(st.v));
+    return `<button class="bcard" data-spot="${sp.id}" data-day="${dayId(today)}">${name}
+      <span class="bline"><span class="score ${band(st.v)}">${st.v}</span><span class="bwhen">${rangeText(st.a, st.b)}</span><span class="bverdict">${sp.peaks.length > 1 ? esc(st.peak.name) + " · " : ""}${verdict}</span></span>
+      ${condChips(st)}
+      ${weak ? `<span class="bcond weakwhy"><b>${TX.weakWhy}</b> ${esc(limiterText(st, sp))}.</span>` : ""}
+      ${doneNote}${cmpLine}${nextLine}</button>`;
+  }
+  const w = bestWindow(left);
+  const wide = w.runA !== w.coreA || w.runB !== w.coreB ? runRange(w, now) : "";
+  const others = left.filter(x => x !== w).map(x => `${rangeText(x.coreA, x.coreB)} (${x.v}/10)`).join(", ");
+  return `<button class="bcard" data-spot="${sp.id}" data-day="${dayId(today)}">${name}
+    <span class="bline"><span class="score ${band(w.v)}">${w.v}</span><span class="bwhen">${rangeText(w.coreA, w.coreB)}</span><span class="bverdict">${sp.peaks.length > 1 ? esc(w.peak.name) + " · " : ""}${bandTxt(w.v)}</span></span>
+    ${wide}${condChips(w)}${others ? `<span class="bnext">${TX.later} ${others}</span>` : ""}${cmpLine}</button>`;
+}
+// The single best bet across all spots: today from now on, or tomorrow once today is dark.
+function pickFor(d, from) {
+  let best = null;
+  for (const sp of SPOTS) {
+    if (!spotDays(sp).includes(d)) continue;
+    const ws = d === todayLocal() ? windowsFrom(sp, d, from) : windows(sp, d);
+    let c = null;
+    if (ws.length) { const w = bestWindow(ws); c = {sp, a: w.coreA, b: w.coreB, v: w.v, raw: w.raw, peak: w.peak}; }
+    else { const st = bestStretch(timeline(sp, d), from - STEP + 1); if (st) c = {sp, a: st.a, b: st.b, v: st.v, raw: st.raw, peak: st.peak}; }
+    if (c) c.len = c.b - c.a;
+    if (c && (!best || better(c, best))) best = c;
+  }
+  return best;
+}
+function renderPick(today, now) {
+  const el = $("pick"); if (!el) return;
+  let d = today, p = DATA && now < sunEvents(today).dusk ? pickFor(today, now) : null;
+  if (DATA && !p) { d = addDays(today, 1); p = pickFor(d, -Infinity); }
+  if (!p) { el.hidden = true; el.innerHTML = ""; return; }
+  const when = d === today ? rangeText(p.a, p.b) : `${hm(p.a)}–${hm(p.b)}`;
+  const lead = d === today ? TX.pickToday : TX.pickTomorrow;
+  el.hidden = false;
+  el.innerHTML = `<button type="button" class="pickbtn" data-spot="${p.sp.id}" data-day="${dayId(d)}"><span class="score ${band(p.v)}">${p.v}</span><span class="pick-t"><span class="pick-l">${lead}</span><span class="pick-m"><b>${esc(p.sp.name)}</b> <span class="num">${when}</span></span><span class="pick-s">${esc(regionOf(p.sp).name)}${p.sp.peaks.length > 1 ? " · " + esc(p.peak.name) : ""} · ${TX.pickBand[band(p.v)]}</span></span><span class="pick-go" aria-hidden="true">→</span></button>`;
+  el.querySelector("button").onclick = e => { const b = e.currentTarget; selectSpot(b.dataset.spot, {day: b.dataset.day}); };
+}
+// Today's high and low waters at the top of the hero (Corralejo; Cotillo differs by a minute or two).
+function renderHeroTide(today, now) {
+  const el = $("htide"); if (!el) return;
+  const sets = !DATA ? {} : Array.isArray(DATA.tides) ? {corralejo: DATA.tides} : (DATA.tides || {});
+  const T = prepTides(sets.corralejo || Object.values(sets)[0] || []), ext = T.filter(e => e.d === today);
+  if (!ext.length) { el.hidden = true; el.innerHTML = ""; return; }
+  const nx = T.find(e => e.ms > now), td = tideAt(T, now);
+  const T2 = prepTides(sets.cotillo || []).filter(e => e.d === today);
+  const diff = sets.corralejo && T2.length === ext.length && T2.every((e, i) => e.k === ext[i].k)
+    ? Math.max(...T2.map((e, i) => Math.round(Math.abs(e.ms - ext[i].ms) / MIN))) : null;
+  const cells = ext.map(e => `<div class="htc ${e.k === "H" ? "hi" : "lo"}${e.ms < now ? " past" : ""}${e === nx ? " next" : ""}"><span class="tk"><span class="tri" aria-hidden="true">${e.k === "H" ? "▲" : "▼"}</span>${e.k === "H" ? TX.hi : TX.lo}</span><b>${esc(e.t)}</b><small>${fmt(e.m, 1)} m</small></div>`).join("");
+  el.hidden = false;
+  el.innerHTML = `<div class="htide-top"><h2 class="htide-h" id="htide-h">${TX.tideHead}</h2>${td ? `<span class="htide-now">${esc(TX.tideNow(td.rising, phaseOf(td), nx, nx && nx.d !== today))}</span>` : ""}</div>`
+    + `<div class="htide-row" style="--n:${ext.length}">${cells}</div><p class="htide-f">${esc(TX.tideFoot(diff))}</p>`;
+}
+function renderBest() {
+  const el = $("best"), today = todayLocal(), now = Date.now(), dusk = sunEvents(today).dusk;
+  renderHeroTide(today, now);
+  $("h-best").textContent = TX.hBest(dayLabel(today).wd);
+  renderPick(today, now);
+  el.innerHTML = REGIONS.map(r0 => {
+    const rg = rgT(r0), list = spotsIn(rg.id); if (!list.length) return "";
+    const cards = list.map(sp => DATA ? bestCard(sp, today, now, dusk) : `<div class="bcard"><span class="bname">${esc(sp.name)}</span><span class="bcond">${TX.waiting}</span></div>`).join("");
+    return `<section class="rgroup" style="--n:${list.length}" aria-label="${esc(rg.name)}"><h3 class="rhead"><span class="rname">${esc(rg.name)}</span><span class="rsub">${esc(rg.sub)}</span></h3><div class="rcards">${cards}</div></section>`;
+  }).join("");
+  el.querySelectorAll("button.bcard").forEach(btn => btn.addEventListener("click", () => selectSpot(btn.dataset.spot, btn.dataset.day ? {day: btn.dataset.day} : null)));
+}
+// 3-day overview: one table per day, spots grouped by coast (the region rows keep the day tables aligned).
+function renderMatrix() {
+  const el = $("matrix");
+  if (!DATA) { el.innerHTML = `<p class="empty">${TX.mxWait}</p>`; return; }
+  const days = visDays(), nowMs = Date.now();
+  if (!days.length) { el.innerHTML = `<p class="empty">${TX.mxExpired}</p>`; return; }
+  const groups = REGIONS.map(r0 => ({rg: rgT(r0), list: spotsIn(r0.id).map(sp => ({sp, rows: scored(sp)}))})).filter(g => g.list.length);
+  el.innerHTML = `<div class="mxw">${days.map(d => {
+    const times = [...new Set(allSlots().filter(s => s.d === d).map(s => s.t))].sort();
+    const head = `<thead><tr><th class="corner" scope="col"><span class="sr">Spot</span></th><th scope="colgroup" colspan="${times.length}" class="dh">${esc(dayShort(d))}</th></tr>`
+      + `<tr><th class="corner" scope="col"></th>${times.map(t => `<th scope="col" class="th${Math.abs(toInstant(d, t) - nowMs) <= SLOT_HALF ? " now" : ""}">${esc(t.slice(0, 2))}</th>`).join("")}</tr></thead>`;
+    const body = groups.map(({rg, list}) => `<tbody><tr class="rgrow"><th scope="rowgroup" class="rh rgh">${esc(rg.tab)}</th><td class="rgfill" colspan="${times.length}"></td></tr>${list.map(({sp, rows}) => `<tr><th scope="row" class="rh">${esc(sp.short)}</th>${times.map(t => {
+      const r = rows.find(x => x.s.d === d && x.s.t === t);
+      if (!r) return `<td><span class="mc none" aria-label="${TX.noData}"></span></td>`;
+      const isNow = Math.abs(r.ms - nowMs) <= SLOT_HALF; const lab = r.v == null ? TX.darkNot : TX.cell(r.v, bandTxt(r.v));
+      return `<td class="${isNow ? "now" : ""}"><button class="mc ${band(r.v)}${r.past ? " past" : ""}" data-spot="${sp.id}" data-slot="${esc(r.s.d + "T" + r.s.t)}" aria-label="${esc(sp.name)}, ${esc(dayShort(r.s.d))} ${esc(r.s.t)}: ${lab}">${r.v == null ? "" : r.v}</button></td>`;
+    }).join("")}</tr>`).join("")}</tbody>`).join("");
+    return `<table class="mx mxday">${head}${body}</table>`;
+  }).join("")}</div>`;
+  el.querySelectorAll("button.mc").forEach(btn => btn.addEventListener("click", () => selectSpot(btn.dataset.spot, {slot: btn.dataset.slot})));
+}
+// Spot switcher: a region row (Sever / Východ / Západ) and the spots of the chosen region.
+function arrowNav(e, all, i, go) {
+  if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+  e.preventDefault();
+  const j = (i + (e.key === "ArrowRight" ? 1 : all.length - 1)) % all.length; go(all[j]);
+}
+function selectRegion(rid, focus) {
+  const sp = SPOTS.find(s => s.id === LAST[rid] && s.region === rid) || spotsIn(rid)[0];
+  if (sp) selectSpot(sp.id);
+  if (focus) { const b = document.getElementById("rtab-" + rid); if (b) b.focus(); }
+}
+function renderTabs() {
+  const el = $("tabs"), cur = SPOTS.find(s => s.id === current), reg = cur.region;
+  if (el.dataset.built !== LANG) {
+    el.dataset.built = LANG;
+    el.innerHTML = `<div class="rtabs" role="tablist" aria-label="${TX.coast}">${REGIONS.filter(r => spotsIn(r.id).length).map(r => `<button type="button" role="tab" id="rtab-${r.id}" aria-controls="stabs" data-region="${r.id}">${esc(rgT(r).tab)}<span class="cnt" aria-label="${TX.nSpots(spotsIn(r.id).length)}">${spotsIn(r.id).length}</span></button>`).join("")}</div>`
+      + `<div class="stabs" role="tablist" aria-label="${TX.spots}" id="stabs"></div>`;
+    el.querySelectorAll(".rtabs button").forEach((b, i, all) => {
+      b.addEventListener("click", () => selectRegion(b.dataset.region));
+      b.addEventListener("keydown", e => arrowNav(e, all, i, x => selectRegion(x.dataset.region, true)));
+    });
+  }
+  el.querySelectorAll(".rtabs button").forEach(b => { const on = b.dataset.region === reg; b.setAttribute("aria-selected", on); b.tabIndex = on ? 0 : -1; });
+  const st = $("stabs");
+  if (st.dataset.region !== reg) {
+    st.dataset.region = reg;
+    st.innerHTML = spotsIn(reg).map(s => `<button type="button" role="tab" id="tab-${s.id}" aria-controls="panel" data-id="${s.id}">${esc(s.name)}</button>`).join("");
+    st.querySelectorAll("button").forEach((b, i, all) => {
+      b.addEventListener("click", () => selectSpot(b.dataset.id));
+      b.addEventListener("keydown", e => arrowNav(e, all, i, x => { selectSpot(x.dataset.id); x.focus(); }));
+    });
+  }
+  st.querySelectorAll("button").forEach(b => { const on = b.dataset.id === current; b.setAttribute("aria-selected", on); b.tabIndex = on ? 0 : -1; });
+}
+// Small line icons (stroke follows the text colour).
+const ico = d => `<svg class="ic" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const ICON_SUN = ico(`<circle cx="8" cy="8" r="2.8"/><path d="M8 1.6v1.8M8 12.6v1.8M1.6 8h1.8M12.6 8h1.8M3.5 3.5l1.3 1.3M11.2 11.2l1.3 1.3M3.5 12.5l1.3-1.3M11.2 4.8l1.3-1.3"/>`);
+const ICON_TIDE = ico(`<path d="M1.5 6.2c1.6 0 1.6-1.6 3.2-1.6s1.6 1.6 3.3 1.6 1.6-1.6 3.2-1.6 1.6 1.6 3.3 1.6M1.5 11c1.6 0 1.6-1.6 3.2-1.6S6.3 11 8 11s1.6-1.6 3.2-1.6 1.6 1.6 3.3 1.6"/>`);
+const ICON_SW = ico(`<path d="M2 12a6 6 0 0 1 12 0M5 12a3 3 0 0 1 6 0"/>`);
+const ICON_WD = ico(`<path d="M1.8 6h8.4a2 2 0 1 0-2-2M1.8 10h10.4a2 2 0 1 1-2 2"/>`);
+const ICON_PIN = ico(`<path d="M8 14.4s4.6-4.3 4.6-7.8a4.6 4.6 0 1 0-9.2 0c0 3.5 4.6 7.8 4.6 7.8z"/><circle cx="8" cy="6.6" r="1.6"/>`);
+const ICON_CAM = ico(`<rect x="1.6" y="4.4" width="9.4" height="7.4" rx="1.6"/><path d="M11 7.2l3.4-2v5.8L11 9"/>`);
+const ICON_OUT = ico(`<path d="M6.4 3.2H3.2v9.6h9.6V9.6M9 2.6h4.4V7M13.2 2.8 7.4 8.6"/>`);
+const ICON_WAVE = ico(`<path d="M1.6 11.6c1.7 0 1.7-1.6 3.3-1.6s1.6 1.6 3.2 1.6 1.6-1.6 3.2-1.6 1.6 1.6 3.1 1.6"/><path d="M8 2v5.6M5.8 4.2 8 2l2.2 2.2"/>`);
+const ICON_BOLT = ico(`<path d="M9.2 1.8 3.6 9.1h3.9l-.8 5.1 5.7-7.4H8.5z"/>`);
+const ICON_CMP = ico(`<path d="M2.4 5.4h10.4l-2.6-2.6M13.6 10.6H3.2l2.6 2.6"/>`);
+
+function selectSpot(id, target) {
+  const sp = SPOTS.find(s => s.id === id); if (!sp) return;
+  current = id; LAST[sp.region] = id; try { localStorage.setItem("ns_spot", id); } catch (e) {}
+  renderTabs(); renderSpot();
+  const smooth = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+  if (target && target.slot) {
+    const key = target.slot.replace(/[^0-9T]/g, "");
+    const btn = document.querySelector(`#panel button.tcol[data-k="${key}"]`);
+    if (btn) { showWhy(key); btn.closest(".day").scrollIntoView({behavior: smooth, block: "start"}); btn.focus({preventScroll: true}); }
+  } else if (target && target.day) {
+    const day = document.getElementById("day-" + target.day);
+    if (day) day.scrollIntoView({behavior: smooth, block: "start"});
+  }
+}
+function factorRow(ok, label, text) {
+  const cls = ok >= 0.95 ? "good" : ok >= 0.6 ? "ok" : "bad";
+  return `<li class="${cls}"><span class="fd" aria-hidden="true"></span><span><b>${label}</b> ${text}</span></li>`;
+}
+// "Why this score" for one 3-hour model point, shown under the table when its time is tapped.
+function whyHtml(spot, r) {
+  const pk = r.best.peak, F = r.best.F, s = r.s, td = r.tide, V = pk.lv[LEVEL];
+  const size = F.h >= 0.95 ? TX.fits : s.h < V.hgt.lo ? (F.h >= 0.6 ? TX.small : TX.tooSmall) : (F.h >= 0.6 ? TX.big : TX.tooBig);
+  const enTxt = !isFinite(s.kj) ? "" : F.e >= 0.95 ? TX.enOk : V.kj.lo && s.kj < V.kj.lo ? TX.enWeak : F.e >= 0.6 ? TX.enStrongish : TX.enStrong;
+  const forWho = spot.peaks.length > 1 ? TX.forPk(pk.name) : "";
+  const li = [
+    factorRow(F.h, TX.size, `${fmt(s.h)} m, ${size}, ${TX.ideal} ${esc(forWho)}${hgtText(V.hgt)}`),
+    factorRow(F.p, TX.period, `${s.p} s, ${TX.per(s.p)}`),
+    isFinite(s.kj) ? factorRow(F.e, TX.energy, `${s.kj} kJ, ${enTxt}, ${TX.ideal} ${esc(kjText(V.kj))}`) : "",
+    factorRow(F.d, TX.sdir, `${TX.fromDir(dn(s.sd))}, ${TX.dirFit(F.d)}`),
+    factorRow(F.w, TX.wind, `${TX.speedFrom(s.w, dn(s.wd))}, ${TX.windDesc[r.wind.k] || ""}`),
+    td ? factorRow(F.t, TX.tide, esc(TX.tideLine(td.rising, phaseOf(td), F.t, pk.name))) : "",
+    factorRow(r.light === "day" ? 1 : r.light === "twilight" ? 0.7 : 0, TX.light, TX.lightTxt(r.light, r.best.v))
+  ].join("");
+  const extra = [];
+  if (r.peaks.length > 1) extra.push(r.peaks.map(p => `${esc(p.peak.name)} ${p.v}/10`).join(" · "));
+  if (spot.own && s.sf != null) extra.push(esc(TX.sfRates((pointOf(spot) || spot).name, s.sf)));
+  const head = `${esc(dayShort(s.d))} ${esc(s.t)} · ${r.v == null ? TX.dark : r.v + "/10"}${spot.peaks.length > 1 && r.v != null ? " · " + esc(pk.name) : ""}`;
+  return `<div class="why-h"><b>${head}</b><button class="why-x" type="button" data-close="1">${TX.close}</button></div><ul>${li}</ul>${extra.length ? `<p class="meta">${extra.join(" · ")}</p>` : ""}`;
+}
+let WHY_OPEN = null;
+const slotKey = r => (r.s.d + "T" + r.s.t).replace(/[^0-9T]/g, "");
+function showWhy(key, toggle) {
+  const sp = SPOTS.find(s => s.id === current);
+  const r = scored(sp).find(x => slotKey(x) === key); if (!r) return;
+  const box = document.getElementById("why-" + dayId(r.s.d)); if (!box) return;
+  const day = box.closest(".day"), same = WHY_OPEN === key && !box.hidden;
+  day.querySelectorAll("button.tcol").forEach(b => { const on = !(same && toggle) && b.dataset.k === key; b.classList.toggle("sel", on); b.setAttribute("aria-expanded", String(on)); });
+  if (same && toggle) { box.hidden = true; WHY_OPEN = null; return; }
+  box.innerHTML = whyHtml(sp, r); box.hidden = false; WHY_OPEN = key;
+}
+
+// Why a weak stretch is weak: the one or two factors that pull the score down most.
+function limiterText(st, spot) {
+  const F = st.F || {}, c = st.cond, pk = st.peak, V = pk.lv[LEVEL], M = TX.lim;
+  const txt = {
+    w: () => M.w(Math.round(c.w), dn(degKey(c.wdDeg)), wsLabel(st.wind)),
+    h: () => c.h < V.hgt.lo ? M.hSmall(fmt(c.h, 1)) : M.hBig(fmt(c.h, 1), fmt(V.hgt.hi, 1)),
+    p: () => M.p(Math.round(c.p)),
+    d: () => M.d(dn(degKey(c.sdDeg))),
+    t: () => M.t(phaseOf(st.tide)),
+    e: () => V.kj.lo && c.kj < V.kj.lo ? M.eWeak(Math.round(c.kj)) : M.eStrong(Math.round(c.kj))
+  };
+  const order = Object.keys(txt).filter(k => isFinite(F[k])).sort((a, b) => F[a] - F[b]);
+  const pick = order.filter(k => F[k] < 0.6).slice(0, 2);
+  // Size and energy usually fail together: say it once.
+  if (pick.includes("h") && pick.includes("e")) {
+    const big = c.h > V.hgt.hi, strong = !(V.kj.lo && c.kj < V.kj.lo);
+    if (big === strong) return M.both(big, fmt(c.h, 1), Math.round(c.kj), fmt(V.hgt.hi, 1));
+  }
+  return (pick.length ? pick : order.slice(0, 1)).map(k => txt[k]()).join(TX.and);
+}
+// The best time of the day even when it is weak (for today: from now on).
+function stretchFor(spot, d) {
+  const today = todayLocal();
+  return bestStretch(timeline(spot, d), d === today ? Date.now() - STEP + 1 : -Infinity); // the running 10-minute step counts
+}
+// One line of "Kdy jít": score, time and tags, then the wider "dá se" stretch and the condition chips.
+function winItem(w, o) {
+  const tags = (o.tags || []).filter(Boolean).map(t => `<span class="wtag${t === TX.tagBest ? " top" : ""}">${esc(t)}</span>`).join("");
+  return `<li class="${o.cls || ""}"><span class="score ${band(w.v)}">${w.v}</span><div class="wb">
+    <div class="whead"><b class="wtime">${o.time}</b>${tags}</div>${o.range || ""}</div>${o.chips === false ? "" : condChips(w)}${o.extra || ""}</li>`;
+}
+function runRange(w, now) {
+  const q = w.fromDawn && w.toDusk ? TX.allDaylight : w.fromDawn && w.runA > now ? TX.fromDawn : w.toDusk ? TX.toDusk : "";
+  return `<span class="wrange"><span class="wl">${TX.rideable}</span><b>${rangeText(w.runA, w.runB)}</b>${q ? `<span class="wq">${q}</span>` : ""}</span>`;
+}
+function weakItem(spot, d, st) {
+  const isToday = d === todayLocal(), weak = st.v < 3;
+  const dayBest = isToday ? bestStretch(timeline(spot, d)) : null;
+  const pastNote = dayBest && dayBest.b < Date.now() && dayBest.v > st.v ? TX.pastBest(hm(dayBest.a), hm(dayBest.b), dayBest.v) : "";
+  const tags = [weak ? TX.tagWeak : bandTxt(st.v), weak ? (st.whole ? (isToday ? TX.restSimilar : TX.daySimilar) : TX.bestOfDay) : TX.tagBrief,
+    spot.peaks.length > 1 ? st.peak.name : ""];
+  const range = st.b < Date.now() ? `${hm(st.a)}–${hm(st.b)}` : rangeText(st.a, st.b);
+  const why = weak ? `<p class="wwhy"><b>${TX.weakWhy}</b> ${esc(limiterText(st, spot))}.${pastNote ? " " + pastNote : ""}</p>` : pastNote ? `<p class="wwhy">${pastNote}</p>` : "";
+  return winItem(st, {cls: "best", time: range, tags, extra: why});
+}
+// "Kdy jít" for one day. Today: windows that are over stay listed (dimmed), the rest is recomputed from now on.
+function goBlock(spot, d) {
+  const now = Date.now(), isToday = d === todayLocal(), wins = windows(spot, d);
+  const done = isToday ? wins.filter(w => w.b < now) : [];
+  const left = isToday ? windowsFrom(spot, d, now) : wins;
+  const doneLi = done.map(w => winItem(w, {cls: "over", time: `${hm(w.coreA)}–${hm(w.coreB)}`, tags: [TX.over], chips: false})).join("");
+  if (!left.length) {
+    const st = stretchFor(spot, d);
+    if (!st) return `<div class="go none"><span class="lk">${TX.go}</span>${doneLi ? `<ul>${doneLi}</ul>` : ""}<p>${TX.darkAlready}</p></div>`;
+    return `<div class="go weak"><span class="lk">${TX.go}</span><ul>${doneLi}${weakItem(spot, d, st)}</ul></div>`;
+  }
+  const best = bestWindow(left), shownRun = new Set();
+  return `<div class="go"><span class="lk">${TX.go}</span><ul>${doneLi}${left.map(w => {
+    const first = !shownRun.has(w.runA); shownRun.add(w.runA);
+    return winItem(w, {cls: w === best ? "best" : "", time: rangeText(w.coreA, w.coreB),
+      tags: [w === best ? TX.tagBest : "", spot.peaks.length > 1 ? w.peak.name : ""],
+      range: first && (w.runA !== w.coreA || w.runB !== w.coreB) ? runRange(w, now) : ""});
+  }).join("")}</ul></div>`;
+}
+// Surf table for one day: times in columns (like surf-forecast.com), conditions in rows. Tap a time for "why".
+function surfTable(sp, d, dr, maxV) {
+  const now = Date.now(), R = TX.rows;
+  const cls = r => [r.past ? "past" : "", r.v == null ? "isdark" : ""].filter(Boolean).join(" ");
+  const head = dr.map(r => {
+    const isNow = Math.abs(r.ms - now) <= SLOT_HALF;
+    const tag = isNow ? `<span class="tag now">${TX.now}</span>` : r.light === "dark" ? `<span class="tag dark">${TX.dark}</span>` : r.light === "twilight" ? `<span class="tag tw">${TX.tw(r.ms)}</span>` : "";
+    const top = r.v != null && r.v === maxV && maxV >= 3 && !r.past;
+    return `<th scope="col" class="${cls(r)}"><button type="button" class="tcol${top ? " top" : ""}" data-k="${slotKey(r)}" aria-expanded="false" aria-controls="why-${dayId(d)}" title="${TX.whyTitle}"><span class="tm">${esc(r.s.t)}</span>${tag}</button></th>`;
+  }).join("");
+  const row = (lab, f, cellCls) => `<tr><th scope="row" class="lab">${lab}</th>${dr.map(r => `<td class="${[cellCls ? cellCls(r) : "", cls(r)].filter(Boolean).join(" ")}">${f(r)}</td>`).join("")}</tr>`;
+  // Wind state like surf-forecast.com. In Czech "od břehu" / "ke břehu" never split, so long states break as "boční / od břehu";
+  // in English "cross-off" / "cross-on" stay whole and only "cross-shore" breaks, the same in every column.
+  const windState = r => { const t = esc(wsLabel(r.wind));
+    return `<span class="wst">${isEN() ? t.replace(/^cross-(off|on)$/, `<span class="nw">cross-$1</span>`) : t.replace(/ (?=břehu)/g, "&nbsp;")}</span>`; };
+  const score = r => `<span class="score sm ${band(r.v)}">${r.v == null ? "–" : r.v}</span>${sp.peaks.length > 1 && r.v != null ? `<span class="pk">${esc(r.best.peak.name)}</span>` : ""}`;
+  const waves = r => `<span class="v">${fmt(r.s.h)}</span> <span class="u">m</span>`;
+  const per = r => `<span class="v">${r.s.p}</span> <span class="u">s</span>`;
+  const kj = r => isFinite(r.s.kj) ? `<span class="v">${r.s.kj}</span><span class="kjbar" style="--k:${Math.min(1, r.s.kj / 1000).toFixed(2)}"></span>` : "–";
+  const swell = r => `<span class="cellwrap">${arrowSvg(r.s.sdDeg)}<small>${dn(r.s.sd)}</small></span>`;
+  const wind = r => `<span class="cellwrap">${arrowSvg(r.s.wdDeg)}<span class="v">${r.s.w}</span><small>${dn(r.s.wd)}</small></span>`;
+  const water = r => {
+    const td = r.tide; if (!td) return "–";
+    const tq = r.best.F.t >= 1 ? "good" : r.best.F.t >= 0.6 ? "" : "bad";
+    return `<span class="cellwrap"><span class="tdir ${td.rising ? "up" : "down"}" title="${td.rising ? TX.rising : TX.falling}">${td.rising ? "↗" : "↘"}</span><span class="ph ${tq}">${phaseOf(td).replace(/ /g, "")}</span></span>`;
+  };
+  return `<div class="tblwrap"><table class="tbl"><thead><tr><th class="lab" scope="col"><span class="sr">${TX.time}</span></th>${head}</tr></thead><tbody>`
+    + row(R.score, score) + row(R.waves, waves, r => "fit " + fitCls(r.best.F.h)) + row(R.period, per)
+    + row(R.kj, kj, r => isFinite(r.s.kj) ? "fit " + fitCls(r.best.F.e) : "") + row(R.swell, swell)
+    + row(R.wind, wind) + row(R.ws, windState, r => "ws " + r.wind.k) + row(R.tide, water)
+    + `</tbody></table></div><div class="why" id="why-${dayId(d)}" hidden></div>`;
+}
+// One legend for the whole spot, so the day cards stay clean.
+function legendHtml(sp) {
+  const pks = peaksFor(sp, LEVEL);
+  const tideKeys = pks.map((pk, i) => `<span><span class="sw" style="--c:${i === 0 ? "var(--sea)" : "var(--coast)"}"></span>${TX.idealTide}${sp.peaks.length > 1 ? " " + esc(pk.name) : ""}</span>`).join("");
+  return `<div class="legend card">${tideKeys}
+    <span><span class="sw bar"></span>${TX.legBar}</span>
+    <span><span class="sw outline"></span>${TX.legOutline}</span>
+    <span><span class="sw shade"></span>${TX.legShade}</span>
+    <span><span class="sw nowl"></span>${TX.now}</span>
+    <span><span class="sw ws" style="background:var(--good-tint)"></span>${TX.legGood}</span>
+    <span><span class="sw ws" style="background:var(--warn-tint)"></span>${TX.legOk}</span>
+    <span><span class="sw ws" style="background:var(--bad-tint)"></span>${TX.legBad}</span>
+    ${compareFor(sp) ? `<span><span class="sw" style="--c:var(--ink)"></span>${TX.legCmp}</span>` : ""}
+    <span>${TX.legTap}</span></div>`;
+}
+// Ideal wave height and energy for each level (columns), per peak; the level the page scores for is highlighted.
+function idealTable(sp) {
+  const head = `<thead><tr><td></td>${LEVELS.map(l => `<th scope="col" class="${l === LEVEL ? "on" : ""}">${esc(TX.lv[l])}</th>`).join("")}</tr></thead>`;
+  const body = sp.peaks.map(pk => {
+    const cells = (f, first) => LEVELS.map(l => {
+      const V = pk.lv[l], on = l === LEVEL ? "on" : "";
+      return V ? `<td class="${on}">${f(V)}</td>` : `<td class="${on} na">${first ? TX.notSuit : "–"}</td>`;
+    }).join("");
+    return (sp.peaks.length > 1 ? `<tr class="pkrow"><th scope="rowgroup">${esc(pk.name)}</th>${LEVELS.map(l => `<td class="${l === LEVEL ? "on" : ""}"></td>`).join("")}</tr>` : "")
+      + `<tr><th scope="row">${TX.height}</th>${cells(V => `<b>${hgtText(V.hgt)}</b><small>${TX.rideRange(fmt(V.hgt.min, 1), fmt(V.hgt.max, 1))}</small>`, true)}</tr>`
+      + `<tr><th scope="row">${TX.energyK}</th>${cells(V => `<b>${kjText(V.kj)}</b>`, false)}</tr>`;
+  }).join("");
+  return `<table class="itbl">${head}<tbody>${body}</tbody></table><p class="fine">${esc(TX.idealFine((pointOf(sp) || sp).name))}</p>`;
+}
+function renderSpot() {
+  const sp = SPOTS.find(s => s.id === current), g = guideT(sp.id), el = $("panel");
+  el.setAttribute("aria-labelledby", "tab-" + sp.id);
+  WHY_OPEN = null;
+  const rows = DATA ? scored(sp) : [];
+  const focus = DATA ? focusRow(rows) : null;
+  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${sp.lat},${sp.lon}`;
+  const linkIcon = t => /kamera|webcam/i.test(t) ? ICON_CAM : t === TX.map ? ICON_PIN : ICON_OUT;
+  const links = [[TX.map, mapUrl], ...g.links].map(([t, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${linkIcon(t)}${esc(t)}</a>`).join("");
+  const nowTxt = focus
+    ? `<b>${esc(TX.fcAt(dayInline(focus.s.d), focus.s.t))}</b> ${esc(focus.wind.k === "glassy" ? TX.glassyTxt : TX.windTxt(focus.s.w, dn(focus.s.wd), wsLabel(focus.wind)))}, ${esc(TX.swellTxt(fmt(focus.s.h), dn(focus.s.sd)))}${focus.s.w > 5 ? ". " + TX.dashed : ""}`
+    : TX.noFocus;
+  const T = tidesOf(sp), pt = pointOf(sp);
+  const days = DATA ? spotDays(sp).filter(d => d >= todayLocal()) : [];
+  const station = pt && DATA && DATA.tideNames ? DATA.tideNames[pt.tides] : "";
+  const tideSummary = sp.peaks.map(pk => (sp.peaks.length > 1 ? pk.name + ": " : "") + pkTide(sp, pk)).join(" · ");
+  const tidePeaks = sp.peaks.map(pk => `<li><b>${esc(sp.peaks.length > 1 ? pk.name : TX.bestW)}:</b> ${esc(pkTide(sp, pk))}${days.length ? `<span class="wins"><span class="wl">${TX.idealDaylight}</span>${days.map(d => { const tw = tideWindows(pk, T, d); return `<span><b>${esc(dayShort(d))}</b> ${tw === "all" ? TX.allDay : tw.length ? tw.map(x => hm(x.a) + "–" + hm(x.b)).join(", ") : "–"}</span>`; }).join("")}</span>` : ""}</li>`).join("");
+  let fc = "";
+  if (!DATA) fc = `<p class="empty">${dbState === "loading" ? TX.loading : TX.fcNone}</p>`;
+  else if (!slotsOf(sp).length) fc = `<p class="empty">${TX.fcNoSpot}</p>`;
+  else if (!days.length) fc = `<p class="empty">${TX.fcExpired}</p>`;
+  else {
+    const maxV = Math.max(-1, ...rows.filter(r => !r.past && r.v != null).map(r => r.v));
+    fc = days.map(d => {
+      const l = dayLabel(d), s = sunEvents(d), dr = rows.filter(r => r.s.d === d), wins = windows(sp, d);
+      // High and low waters of the day in one even row; the ones in the dark are dimmed.
+      const ext = T.filter(e => e.d === d);
+      const tides = ext.length ? `<div class="tides" style="--n:${ext.length}">${ext.map(e => `<div class="tcell ${e.k === "H" ? "hi" : "lo"}${e.ms < s.dawn || e.ms > s.dusk ? " night" : ""}"><span class="tk"><span class="tri" aria-hidden="true">${e.k === "H" ? "▲" : "▼"}</span>${e.k === "H" ? TX.hi : TX.lo}</span><b class="num">${esc(e.t)}</b></div>`).join("")}</div>` : "";
+      const c = compareFor(sp);
+      const cmp = c && c.days.includes(d) ? `<p class="cmp"><span class="lk">${ICON_CMP}${TX.compare}</span><span><b>mondo.surf:</b> ${esc(cmpText(c, d))}</span></p>` : "";
+      return `<section class="day card" id="day-${dayId(d)}" aria-label="${esc(l.rel ? l.rel + ", " : "")}${esc(l.wd)}">
+        <div class="dayhead"><h3>${l.rel ? `<span class="rel">${l.rel}</span>` : ""}${esc(l.wd)}</h3>
+          <div class="daymeta"><span class="pill" title="${TX.sun(hm(s.rise), hm(s.set))}">${ICON_SUN}${TX.lightPill} <b class="num">${hm(s.dawn)}–${hm(s.dusk)}</b></span></div></div>
+        ${tides}
+        ${goBlock(sp, d)}
+        ${cmp}
+        ${tideChart(sp, d, dr, wins)}
+        ${surfTable(sp, d, dr, maxV)}
+      </section>`;
+    }).join("");
+  }
+  const rg = regionOf(sp);
+  el.innerHTML = `
+    <div class="spothead">
+      <span class="spot-eyebrow">${esc(rg.name)} · ${esc(rg.sub)}</span>
+      <h2>${esc(sp.name)}</h2>
+      <div class="chips"><span class="chip">${esc(spType(sp))}</span><span class="chip">${esc(spLevel(sp))}</span></div>
+      <div class="links">${links}</div>
+    </div>
+    <div class="ideal">
+      <div class="iw"><span class="lk">${ICON_WAVE}${TX.idealHead}</span>${idealTable(sp)}</div>
+      <div><span class="lk">${ICON_TIDE}${TX.bestTide}</span><b>${esc(tideSummary)}</b></div>
+      <div><span class="lk">${ICON_SW}${TX.swellK}</span><b>${esc(g.swellText)}</b></div>
+      <div><span class="lk">${ICON_WD}${TX.windK}</span><b>${esc(g.windText)} ${TX.offTag}</b></div>
+    </div>
+    ${DATA && days.length ? legendHtml(sp) : ""}
+    <section aria-labelledby="h-fc"><h2 class="sect-h" id="h-fc">${TX.fcHead}</h2><div class="fc">${fc}</div></section>
+    <section aria-labelledby="h-guide"><h2 class="sect-h" id="h-guide">${TX.guideHead}</h2>
+      <div class="guide card">
+        <figure class="site">
+          <figcaption class="card-h">${TX.siteCap}</figcaption>
+          ${diagram(sp, focus)}
+          <ul class="dg-legend">
+            <li>${ICON_SWELL}<span><b>${TX.idealSwell}</b> ${TX.comes} ${esc(g.swellText)}</span></li>
+            <li>${ICON_WIND}<span><b>${TX.idealWind}</b> ${esc(g.windText)}, ${TX.offLand}</span></li>
+            <li>${ICON_NOW}<span>${nowTxt}</span></li>
+          </ul>
+        </figure>
+        <div class="facts">
+          <div class="tidebox"><h3 class="card-h">${TX.tideboxH}</h3><ul>${tidePeaks}</ul><p class="fine">${esc((isEN() ? TIDE_NOTE_EN : TIDE_NOTE)[sp.id])}${station ? esc(TX.tideFor(station)) : ""}</p></div>
+          <dl>${g.rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
+        </div>
+      </div>
+    </section>`;
+  el.onclick = e => {
+    const b = e.target.closest("button.tcol");
+    if (b) { showWhy(b.dataset.k, true); return; }
+    const x = e.target.closest("[data-close]");
+    if (x) {
+      const box = x.closest(".why"); box.hidden = true; WHY_OPEN = null;
+      box.closest(".day").querySelectorAll("button.tcol.sel").forEach(t => { t.classList.remove("sel"); t.setAttribute("aria-expanded", "false"); });
+    }
+  };
+}
+
+function renderAll() { CACHE = {}; renderMeta(); renderBest(); renderMatrix(); renderTabs(); renderSpot(); }
+
+// ---------- Language switch ----------
+// Static text in the page is marked with data-i18n (inner HTML) or data-i18n-aria (aria-label).
+function applyLang() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("[data-i18n]").forEach(el => { const v = TX.st[el.dataset.i18n]; if (v != null) el.innerHTML = v; });
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => { const v = TX.st[el.dataset.i18nAria]; if (v != null) el.setAttribute("aria-label", v); });
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+}
+function setLang(l) {
+  if (!LANGS.includes(l) || l === LANG) return;
+  LANG = l; TX = STR[l];
+  try { localStorage.setItem("ns_lang", l); } catch (e) {}
+  applyLang(); renderAll();
+}
+document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.lang)));
+
+// The forecast ships inside the page, so it works for anyone with the link, signed in or not.
+// The data comes from data/forecast.json, which a GitHub Action refreshes after each surf-forecast update.
+const EMBEDDED = /*DATA*/null;
+function setData(d) {
+  DATA = d; CACHE = {};
+  const sets = Array.isArray(d.tides) ? {corralejo: d.tides} : (d.tides || {}); // schema 2 had one tide list and one point
+  const T = Object.fromEntries(Object.entries(sets).map(([k, v]) => [k, prepTides(v)]));
+  const pts = d.points || {majanicho: {name: "Majanicho", tides: "corralejo", slots: d.slots}};
+  POINTS = {};
+  for (const [k, p] of Object.entries(pts)) POINTS[k] = {id: k, name: p.name || k, url: p.url || "", tides: p.tides, S: prepSlots(validSlots(p.slots)), T: T[p.tides] || Object.values(T)[0] || []};
+  dbState = "ok";
+}
+if (EMBEDDED && (EMBEDDED.points || Array.isArray(EMBEDDED.slots))) setData(EMBEDDED); else dbState = "loading";
+// Load the forecast file now and again every 15 minutes, so an open page picks up new runs.
+let lastIssued = null;
+function loadData() {
+  return fetch("data/forecast.json?t=" + Date.now(), {cache: "no-store"})
+    .then(r => r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status)))
+    .then(d => {
+      if (!d || !(d.points || Array.isArray(d.slots))) { if (!DATA) { dbState = "empty"; renderAll(); } return; }
+      const key = d.updatedAt + "|" + d.issued;
+      if (key === lastIssued) return;
+      lastIssued = key; setData(d); renderAll();
+    })
+    .catch(() => { if (!DATA) { dbState = "error"; renderAll(); } });
+}
+loadData();
+setInterval(loadData, 15 * 60000);
+applyLang();
+renderAll();
+// Keep "teď", past slots and the best windows current while the page stays open.
+setInterval(() => {
+  if (!DATA) return;
+  CACHE = {}; renderMeta(); renderBest(); renderMatrix();
+  if (!document.querySelector("#panel details[open]")) renderSpot();
+}, 10 * 60000);
+
+
+// Hero decoration: slow swell lines ("corduroy") drawn on a canvas. Static under reduced motion, paused when off screen.
+(function swellLines() {
+  const cv = document.getElementById("swell");
+  if (!cv || typeof cv.getContext !== "function") return;
+  const ctx = cv.getContext("2d"); if (!ctx) return;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let w = 0, h = 0, raf = 0, visible = true; const t0 = performance.now();
+  function size() {
+    const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+    w = r.width; h = r.height; cv.width = Math.max(1, Math.round(w * dpr)); cv.height = Math.max(1, Math.round(h * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function draw(now) {
+    const t = (now - t0) / 1000; ctx.clearRect(0, 0, w, h);
+    const n = 12;
+    for (let i = 0; i < n; i++) {
+      const y0 = h * (0.12 + i * 0.075), amp = 3 + i * 0.85, k = 0.011 - i * 0.00035, sp = 0.28 + i * 0.025;
+      ctx.beginPath();
+      for (let x = -12; x <= w + 12; x += 8) {
+        const y = y0 + Math.sin(x * k + t * sp + i * 0.7) * amp + Math.sin(x * k * 0.37 - t * sp * 0.55 + i * 1.3) * amp * 0.55;
+        if (x === -12) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = `rgba(255,255,255,${(0.05 + i * 0.014).toFixed(3)})`;
+      ctx.lineWidth = 1 + i * 0.09; ctx.stroke();
+    }
+    if (!reduce && visible && !document.hidden) raf = requestAnimationFrame(draw);
+  }
+  size(); draw(performance.now());
+  if (typeof ResizeObserver === "function") new ResizeObserver(() => { size(); if (reduce) draw(performance.now()); }).observe(cv);
+  if (!reduce && typeof IntersectionObserver === "function") new IntersectionObserver(es => {
+    visible = es[0].isIntersecting; cancelAnimationFrame(raf); if (visible) raf = requestAnimationFrame(draw);
+  }).observe(cv);
+  document.addEventListener("visibilitychange", () => { cancelAnimationFrame(raf); if (!document.hidden && !reduce && visible) raf = requestAnimationFrame(draw); });
+})();
+
+</script>
+
+</body>
+</html>
