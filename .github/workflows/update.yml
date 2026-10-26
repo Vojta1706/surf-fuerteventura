@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "normal, force (uložit i bez nové předpovědi) nebo debug (jen vypsat, co se přečetlo)"
+        description: "normal, force (uložit i bez nové předpovědi), debug (jen vypsat, co se přečetlo) nebo dump (uložit stažené stránky do větve debug-dump)"
         default: normal
 
 permissions:
@@ -26,7 +26,19 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install --quiet requests beautifulsoup4
+      - name: Uložit stažené stránky (jen režim dump)
+        if: ${{ inputs.mode == 'dump' }}
+        run: |
+          python3 scripts/dump.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git checkout -b debug-dump
+          git add -f debug
+          git commit -q -m "Stažené stránky pro ladění"
+          git push -f origin debug-dump
+          exit 0
       - name: Stáhnout předpověď
+        if: ${{ inputs.mode != 'dump' }}
         run: |
           case "${{ inputs.mode }}" in
             force) python3 scripts/update.py --force ;;
@@ -34,6 +46,7 @@ jobs:
             *) python3 scripts/update.py ;;
           esac
       - name: Uložit nová data
+        if: ${{ inputs.mode != 'dump' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
