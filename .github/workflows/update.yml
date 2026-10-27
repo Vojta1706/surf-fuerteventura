@@ -2,7 +2,7 @@ name: Aktualizace předpovědi
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # každých 15 minut; když surf-forecast nemá nic nového, skončí hned
+    - cron: "7,22,37,52 * * * *"   # každých 15 minut mimo celé hodiny (GitHub v ty chvíle plánované běhy často vynechává); když surf-forecast nemá nic nového, skončí hned
   workflow_dispatch:
     inputs:
       mode:
