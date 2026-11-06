@@ -1,13 +1,13 @@
 {
  "schema": 3,
- "updatedAt": "2026-11-06T02:01:00+00:00",
- "issued": "čt 5. 11. 23:00",
- "issuedRaw": "11 pm 5 Nov 2026",
+ "updatedAt": "2026-11-06T08:30:46+00:00",
+ "issued": "pá 6. 11. 05:00",
+ "issuedRaw": "5 am 6 Nov 2026",
  "source": "surf-forecast.com, předpověď po 3 h pro body Majanicho, Bajo el Medio (Rocky Point) a Playa de Esquinzo; přílivy Corralejo a Cotillo",
  "sourceUrl": "https://www.surf-forecast.com/",
- "waterTemp": 23.5,
- "note": "Pátek 6. 11.: nejlíp Playa de Esquinzo 07:36–14:56 (9/10; 0,8 m, bezvětří), dál Majanicho 07:46–14:46 (9/10). Sobota 7. 11.: nejlíp Punta Blanca 08:37–12:27 (8/10; 0,6 m, vítr od břehu), dál Playa de Esquinzo 06:47–13:07 (6/10). Neděle 8. 11.: slabé, nejvýš Punta Blanca 06:48–07:28 (0/10; 0,2 m, boční vítr). Začátečníkům nejvíc sedne La Caleta (pátek 07:46–14:46, 9/10).",
- "noteEn": "Friday: best is Playa de Esquinzo 07:36–14:56 (9/10; 0.8 m, glassy), then Majanicho 07:46–14:46 (9/10). Saturday: best is Punta Blanca 08:37–12:27 (8/10; 0.6 m, offshore wind), then Playa de Esquinzo 06:47–13:07 (6/10). Sunday: weak, at best Punta Blanca 06:48–07:28 (0/10; 0.2 m, cross-shore wind). For beginners, La Caleta suits best (Friday 07:46–14:46, 9/10).",
+ "waterTemp": 23.6,
+ "note": "Pátek 6. 11.: nejlíp Playa de Esquinzo 07:46–14:56 (9/10; 0,8 m, bezvětří), dál Majanicho 07:56–14:46 (9/10). Sobota 7. 11.: nejlíp Punta Blanca 08:37–13:57 (8/10; 0,6 m, vítr od břehu), dál Playa de Esquinzo 07:57–13:27 (7/10). Neděle 8. 11.: nejlíp Punta Blanca 09:48–11:18 (6/10; 0,6 m, boční vítr od břehu). Začátečníkům nejvíc sedne La Caleta (pátek 07:56–14:46, 9/10).",
+ "noteEn": "Friday: best is Playa de Esquinzo 07:46–14:56 (9/10; 0.8 m, glassy), then Majanicho 07:56–14:46 (9/10). Saturday: best is Punta Blanca 08:37–13:57 (8/10; 0.6 m, offshore wind), then Playa de Esquinzo 07:57–13:27 (7/10). Sunday: best is Punta Blanca 09:48–11:18 (6/10; 0.6 m, cross-offshore wind). For beginners, La Caleta suits best (Friday 07:56–14:46, 9/10).",
  "points": {
   "majanicho": {
    "name": "Majanicho",
@@ -34,7 +34,7 @@
      "p": 12,
      "kj": 210,
      "w": 5,
-     "wd": "ESE",
+     "wd": "E",
      "sf": 2,
      "ws": "glassy"
     },
@@ -58,9 +58,9 @@
      "p": 12,
      "kj": 175,
      "w": 5,
-     "wd": "N",
-     "sf": 2,
-     "ws": "glassy"
+     "wd": "NNE",
+     "sf": 1,
+     "ws": "cross-on"
     },
     {
      "d": "2026-11-06",
@@ -70,9 +70,9 @@
      "p": 12,
      "kj": 139,
      "w": 5,
-     "wd": "ENE",
-     "sf": 1,
-     "ws": "glassy"
+     "wd": "NE",
+     "sf": 0,
+     "ws": "cross-on"
     },
     {
      "d": "2026-11-07",
@@ -81,7 +81,7 @@
      "sd": "NW",
      "p": 11,
      "kj": 99,
-     "w": 15,
+     "w": 10,
      "wd": "ESE",
      "sf": 1,
      "ws": "cross-off"
@@ -106,17 +106,17 @@
      "p": 10,
      "kj": 87,
      "w": 10,
-     "wd": "SSE",
+     "wd": "SE",
      "sf": 1,
-     "ws": "off"
+     "ws": "cross-off"
     },
     {
      "d": "2026-11-07",
      "t": "15:00",
-     "h": 0.5,
+     "h": 0.6,
      "sd": "NW",
      "p": 11,
-     "kj": 56,
+     "kj": 72,
      "w": 10,
      "wd": "SW",
      "sf": 1,
@@ -131,19 +131,67 @@
      "kj": 27,
      "w": 15,
      "wd": "SW",
-     "sf": 0,
+     "sf": 1,
      "ws": "cross-off"
     },
     {
      "d": "2026-11-08",
      "t": "06:00",
      "h": 0.2,
-     "sd": "NNW",
-     "p": 10,
-     "kj": 9,
+     "sd": "WNW",
+     "p": 14,
+     "kj": 18,
      "w": 20,
-     "wd": "SW",
+     "wd": "SSW",
      "sf": 0,
+     "ws": "cross-off"
+    },
+    {
+     "d": "2026-11-08",
+     "t": "09:00",
+     "h": 0.4,
+     "sd": "NW",
+     "p": 13,
+     "kj": 56,
+     "w": 20,
+     "wd": "SSW",
+     "sf": 0,
+     "ws": "cross-off"
+    },
+    {
+     "d": "2026-11-08",
+     "t": "12:00",
+     "h": 0.8,
+     "sd": "WNW",
+     "p": 10,
+     "kj": 118,
+     "w": 40,
+     "wd": "SSW",
+     "sf": 0,
+     "ws": "cross-off"
+    },
+    {
+     "d": "2026-11-08",
+     "t": "15:00",
+     "h": 1.8,
+     "sd": "WNW",
+     "p": 11,
+     "kj": 718,
+     "w": 40,
+     "wd": "SSW",
+     "sf": 0,
+     "ws": "cross-off"
+    },
+    {
+     "d": "2026-11-08",
+     "t": "18:00",
+     "h": 1.6,
+     "sd": "W",
+     "p": 10,
+     "kj": 530,
+     "w": 30,
+     "wd": "SSW",
+     "sf": 1,
      "ws": "cross-off"
     }
    ]
@@ -173,7 +221,7 @@
      "p": 12,
      "kj": 50,
      "w": 5,
-     "wd": "ESE",
+     "wd": "E",
      "sf": 0,
      "ws": "glassy"
     },
@@ -184,7 +232,7 @@
      "sd": "NW",
      "p": 12,
      "kj": 50,
-     "w": 0,
+     "w": 5,
      "wd": "ESE",
      "sf": 0,
      "ws": "glassy"
@@ -197,9 +245,9 @@
      "p": 9,
      "kj": 1,
      "w": 5,
-     "wd": "ENE",
+     "wd": "NE",
      "sf": 0,
-     "ws": "glassy"
+     "ws": "on"
     },
     {
      "d": "2026-11-06",
@@ -209,7 +257,7 @@
      "p": 12,
      "kj": 21,
      "w": 5,
-     "wd": "E",
+     "wd": "ENE",
      "sf": 0,
      "ws": "glassy"
     },
@@ -220,7 +268,7 @@
      "sd": "N",
      "p": 12,
      "kj": 3,
-     "w": 15,
+     "w": 10,
      "wd": "ESE",
      "sf": 0,
      "ws": "cross"
@@ -228,10 +276,10 @@
     {
      "d": "2026-11-07",
      "t": "09:00",
-     "h": 0.3,
+     "h": 0.4,
      "sd": "NW",
      "p": 10,
-     "kj": 17,
+     "kj": 0,
      "w": 15,
      "wd": "SE",
      "sf": 0,
@@ -244,10 +292,10 @@
      "sd": "NW",
      "p": 10,
      "kj": 16,
-     "w": 10,
-     "wd": "SSE",
+     "w": 15,
+     "wd": "SE",
      "sf": 0,
-     "ws": "cross-off"
+     "ws": "cross"
     },
     {
      "d": "2026-11-07",
@@ -283,6 +331,54 @@
      "w": 15,
      "wd": "SSW",
      "sf": 0,
+     "ws": "cross-off"
+    },
+    {
+     "d": "2026-11-08",
+     "t": "09:00",
+     "h": 0.1,
+     "sd": "NW",
+     "p": 13,
+     "kj": 7,
+     "w": 20,
+     "wd": "SSW",
+     "sf": 0,
+     "ws": "off"
+    },
+    {
+     "d": "2026-11-08",
+     "t": "12:00",
+     "h": 0.3,
+     "sd": "NW",
+     "p": 12,
+     "kj": 24,
+     "w": 35,
+     "wd": "SSW",
+     "sf": 0,
+     "ws": "off"
+    },
+    {
+     "d": "2026-11-08",
+     "t": "15:00",
+     "h": 0.1,
+     "sd": "N",
+     "p": 7,
+     "kj": 1,
+     "w": 35,
+     "wd": "SSW",
+     "sf": 0,
+     "ws": "off"
+    },
+    {
+     "d": "2026-11-08",
+     "t": "18:00",
+     "h": 0.1,
+     "sd": "N",
+     "p": 7,
+     "kj": 1,
+     "w": 30,
+     "wd": "SSW",
+     "sf": 0,
      "ws": "off"
     }
    ]
@@ -299,7 +395,7 @@
      "sd": "NW",
      "p": 12,
      "kj": 210,
-     "w": 0,
+     "w": 5,
      "wd": "WNW",
      "sf": 2,
      "ws": "glassy"
@@ -324,7 +420,7 @@
      "p": 12,
      "kj": 210,
      "w": 0,
-     "wd": "SW",
+     "wd": "S",
      "sf": 2,
      "ws": "glassy"
     },
@@ -336,31 +432,31 @@
      "p": 12,
      "kj": 172,
      "w": 5,
-     "wd": "NW",
+     "wd": "NNW",
      "sf": 2,
      "ws": "glassy"
     },
     {
      "d": "2026-11-06",
      "t": "18:00",
-     "h": 0.7,
+     "h": 0.8,
      "sd": "NW",
      "p": 12,
-     "kj": 139,
-     "w": 0,
-     "wd": "NE",
-     "sf": 1,
+     "kj": 169,
+     "w": 5,
+     "wd": "NNE",
+     "sf": 2,
      "ws": "glassy"
     },
     {
      "d": "2026-11-07",
      "t": "06:00",
-     "h": 0.7,
+     "h": 0.6,
      "sd": "NW",
      "p": 11,
-     "kj": 123,
+     "kj": 97,
      "w": 10,
-     "wd": "SE",
+     "wd": "ESE",
      "sf": 1,
      "ws": "cross-off"
     },
@@ -370,7 +466,7 @@
      "h": 0.6,
      "sd": "NW",
      "p": 11,
-     "kj": 72,
+     "kj": 92,
      "w": 10,
      "wd": "SE",
      "sf": 1,
@@ -384,9 +480,9 @@
      "p": 10,
      "kj": 87,
      "w": 10,
-     "wd": "S",
-     "sf": 0,
-     "ws": "cross"
+     "wd": "SSE",
+     "sf": 1,
+     "ws": "cross-off"
     },
     {
      "d": "2026-11-07",
@@ -396,7 +492,7 @@
      "p": 11,
      "kj": 90,
      "w": 15,
-     "wd": "SW",
+     "wd": "SSW",
      "sf": 0,
      "ws": "cross-on"
     },
@@ -415,12 +511,60 @@
     {
      "d": "2026-11-08",
      "t": "06:00",
+     "h": 1.1,
+     "sd": "SW",
+     "p": 6,
+     "kj": 80,
+     "w": 20,
+     "wd": "SSW",
+     "sf": 0,
+     "ws": "cross-on"
+    },
+    {
+     "d": "2026-11-08",
+     "t": "09:00",
      "h": 1.3,
      "sd": "WSW",
      "p": 6,
-     "kj": 115,
-     "w": 20,
-     "wd": "SW",
+     "kj": 108,
+     "w": 25,
+     "wd": "SSW",
+     "sf": 0,
+     "ws": "cross-on"
+    },
+    {
+     "d": "2026-11-08",
+     "t": "12:00",
+     "h": 1.5,
+     "sd": "W",
+     "p": 11,
+     "kj": 545,
+     "w": 40,
+     "wd": "SSW",
+     "sf": 0,
+     "ws": "cross-on"
+    },
+    {
+     "d": "2026-11-08",
+     "t": "15:00",
+     "h": 2,
+     "sd": "WNW",
+     "p": 11,
+     "kj": 883,
+     "w": 40,
+     "wd": "SSW",
+     "sf": 0,
+     "ws": "cross-on"
+    },
+    {
+     "d": "2026-11-08",
+     "t": "18:00",
+     "h": 1.7,
+     "sd": "W",
+     "p": 10,
+     "kj": 584,
+     "w": 35,
+     "wd": "SSW",
      "sf": 0,
      "ws": "cross-on"
     }
