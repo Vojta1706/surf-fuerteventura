@@ -1,79 +1,19 @@
 {
  "schema": 3,
- "updatedAt": "2026-11-14T20:00:53+00:00",
- "issued": "so 14. 11. 17:00",
- "issuedRaw": "5 pm 14 Nov 2026",
+ "updatedAt": "2026-11-15T02:00:54+00:00",
+ "issued": "so 14. 11. 23:00",
+ "issuedRaw": "11 pm 14 Nov 2026",
  "source": "surf-forecast.com, předpověď po 3 h pro body Majanicho, Bajo el Medio (Rocky Point) a Playa de Esquinzo; přílivy Corralejo a Cotillo",
  "sourceUrl": "https://www.surf-forecast.com/",
  "waterTemp": 23.5,
- "note": "Neděle 15. 11.: nejlíp Playa de Esquinzo 06:53–09:23 (6/10; 1,0 m, boční vítr od břehu), dál Punta Blanca 06:53–07:03 (6/10). Pondělí 16. 11.: nejlíp Playa de Esquinzo 06:54–09:24 (7/10; 0,7 m, boční vítr od břehu). Začátečníkům nejvíc sedne Playa de Esquinzo (pondělí 06:54–09:24, 7/10).",
- "noteEn": "Sunday: best is Playa de Esquinzo 06:53–09:23 (6/10; 1.0 m, cross-offshore wind), then Punta Blanca 06:53–07:03 (6/10). Monday: best is Playa de Esquinzo 06:54–09:24 (7/10; 0.7 m, cross-offshore wind). For beginners, Playa de Esquinzo suits best (Monday 06:54–09:24, 7/10).",
+ "note": "Neděle 15. 11.: nejlíp Playa de Esquinzo 06:53–09:23 (6/10; 1,0 m, boční vítr od břehu), dál Punta Blanca 06:53–07:03 (6/10). Pondělí 16. 11.: nejlíp Playa de Esquinzo 06:54–09:34 (7/10; 0,7 m, boční vítr od břehu). Úterý 17. 11.: nejlíp Dunas 06:55–07:35 (6/10; 0,6 m, vítr ke břehu). Začátečníkům nejvíc sedne Playa de Esquinzo (pondělí 06:54–09:34, 7/10).",
+ "noteEn": "Sunday: best is Playa de Esquinzo 06:53–09:23 (6/10; 1.0 m, cross-offshore wind), then Punta Blanca 06:53–07:03 (6/10). Monday: best is Playa de Esquinzo 06:54–09:34 (7/10; 0.7 m, cross-offshore wind). Tuesday: best is Dunas 06:55–07:35 (6/10; 0.6 m, onshore wind). For beginners, Playa de Esquinzo suits best (Monday 06:54–09:34, 7/10).",
  "points": {
   "majanicho": {
    "name": "Majanicho",
    "url": "https://www.surf-forecast.com/breaks/Majanicho/forecasts/latest",
    "tides": "corralejo",
    "slots": [
-    {
-     "d": "2026-11-14",
-     "t": "06:00",
-     "h": 1.4,
-     "sd": "NNW",
-     "p": 10,
-     "kj": 388,
-     "w": 15,
-     "wd": "NNE",
-     "sf": 0,
-     "ws": "on"
-    },
-    {
-     "d": "2026-11-14",
-     "t": "09:00",
-     "h": 1.4,
-     "sd": "NNW",
-     "p": 10,
-     "kj": 404,
-     "w": 20,
-     "wd": "NE",
-     "sf": 0,
-     "ws": "cross-on"
-    },
-    {
-     "d": "2026-11-14",
-     "t": "12:00",
-     "h": 1.4,
-     "sd": "NNW",
-     "p": 10,
-     "kj": 400,
-     "w": 15,
-     "wd": "NE",
-     "sf": 0,
-     "ws": "cross-on"
-    },
-    {
-     "d": "2026-11-14",
-     "t": "15:00",
-     "h": 1.3,
-     "sd": "NNW",
-     "p": 10,
-     "kj": 320,
-     "w": 15,
-     "wd": "NNE",
-     "sf": 0,
-     "ws": "on"
-    },
-    {
-     "d": "2026-11-14",
-     "t": "18:00",
-     "h": 1.2,
-     "sd": "NNW",
-     "p": 10,
-     "kj": 294,
-     "w": 20,
-     "wd": "NNE",
-     "sf": 0,
-     "ws": "on"
-    },
     {
      "d": "2026-11-15",
      "t": "06:00",
@@ -113,14 +53,14 @@
     {
      "d": "2026-11-15",
      "t": "15:00",
-     "h": 0.9,
+     "h": 0.8,
      "sd": "N",
      "p": 10,
-     "kj": 154,
-     "w": 15,
+     "kj": 122,
+     "w": 20,
      "wd": "NNE",
      "sf": 0,
-     "ws": "cross-on"
+     "ws": "on"
     },
     {
      "d": "2026-11-15",
@@ -154,7 +94,7 @@
      "p": 11,
      "kj": 103,
      "w": 15,
-     "wd": "NE",
+     "wd": "ENE",
      "sf": 0,
      "ws": "cross-on"
     },
@@ -166,7 +106,7 @@
      "p": 11,
      "kj": 99,
      "w": 10,
-     "wd": "NNE",
+     "wd": "NE",
      "sf": 0,
      "ws": "cross-on"
     },
@@ -190,9 +130,21 @@
      "p": 10,
      "kj": 130,
      "w": 20,
-     "wd": "NNE",
+     "wd": "N",
      "sf": 0,
      "ws": "on"
+    },
+    {
+     "d": "2026-11-17",
+     "t": "06:00",
+     "h": 1.3,
+     "sd": "NW",
+     "p": 11,
+     "kj": 361,
+     "w": 10,
+     "wd": "NE",
+     "sf": 0,
+     "ws": "cross-on"
     }
    ]
   },
@@ -201,66 +153,6 @@
    "url": "https://www.surf-forecast.com/breaks/Rocky-Point_Bajodel-Medio/forecasts/latest",
    "tides": "corralejo",
    "slots": [
-    {
-     "d": "2026-11-14",
-     "t": "06:00",
-     "h": 0.4,
-     "sd": "NNW",
-     "p": 10,
-     "kj": 37,
-     "w": 15,
-     "wd": "NNE",
-     "sf": 0,
-     "ws": "cross-on"
-    },
-    {
-     "d": "2026-11-14",
-     "t": "09:00",
-     "h": 0.4,
-     "sd": "NNW",
-     "p": 10,
-     "kj": 36,
-     "w": 20,
-     "wd": "NE",
-     "sf": 0,
-     "ws": "on"
-    },
-    {
-     "d": "2026-11-14",
-     "t": "12:00",
-     "h": 0.4,
-     "sd": "NW",
-     "p": 10,
-     "kj": 23,
-     "w": 15,
-     "wd": "NE",
-     "sf": 0,
-     "ws": "on"
-    },
-    {
-     "d": "2026-11-14",
-     "t": "15:00",
-     "h": 0.4,
-     "sd": "NW",
-     "p": 9,
-     "kj": 23,
-     "w": 15,
-     "wd": "NNE",
-     "sf": 0,
-     "ws": "on"
-    },
-    {
-     "d": "2026-11-14",
-     "t": "18:00",
-     "h": 0.4,
-     "sd": "NW",
-     "p": 9,
-     "kj": 23,
-     "w": 20,
-     "wd": "NNE",
-     "sf": 0,
-     "ws": "on"
-    },
     {
      "d": "2026-11-15",
      "t": "06:00",
@@ -293,7 +185,7 @@
      "p": 8,
      "kj": 2,
      "w": 15,
-     "wd": "NNE",
+     "wd": "NE",
      "sf": 0,
      "ws": "on"
     },
@@ -336,22 +228,22 @@
     {
      "d": "2026-11-16",
      "t": "09:00",
-     "h": 0.2,
+     "h": 0.3,
      "sd": "ENE",
      "p": 5,
-     "kj": 2,
+     "kj": 5,
      "w": 15,
-     "wd": "NE",
+     "wd": "ENE",
      "sf": 0,
      "ws": "on"
     },
     {
      "d": "2026-11-16",
      "t": "12:00",
-     "h": 0.2,
+     "h": 0.3,
      "sd": "ENE",
      "p": 5,
-     "kj": 2,
+     "kj": 5,
      "w": 10,
      "wd": "NE",
      "sf": 0,
@@ -367,7 +259,7 @@
      "w": 10,
      "wd": "NNE",
      "sf": 0,
-     "ws": "on"
+     "ws": "cross-on"
     },
     {
      "d": "2026-11-16",
@@ -380,6 +272,18 @@
      "wd": "NNE",
      "sf": 0,
      "ws": "cross-on"
+    },
+    {
+     "d": "2026-11-17",
+     "t": "06:00",
+     "h": 0.6,
+     "sd": "NW",
+     "p": 11,
+     "kj": 92,
+     "w": 10,
+     "wd": "NE",
+     "sf": 0,
+     "ws": "on"
     }
    ]
   },
@@ -388,66 +292,6 @@
    "url": "https://www.surf-forecast.com/breaks/Playade-Esquinzo_1/forecasts/latest",
    "tides": "cotillo",
    "slots": [
-    {
-     "d": "2026-11-14",
-     "t": "06:00",
-     "h": 1.4,
-     "sd": "NNW",
-     "p": 10,
-     "kj": 388,
-     "w": 15,
-     "wd": "NNE",
-     "sf": 2,
-     "ws": "cross-off"
-    },
-    {
-     "d": "2026-11-14",
-     "t": "09:00",
-     "h": 1.4,
-     "sd": "NNW",
-     "p": 10,
-     "kj": 400,
-     "w": 15,
-     "wd": "NE",
-     "sf": 1,
-     "ws": "cross-off"
-    },
-    {
-     "d": "2026-11-14",
-     "t": "12:00",
-     "h": 1.4,
-     "sd": "NNW",
-     "p": 11,
-     "kj": 408,
-     "w": 15,
-     "wd": "NE",
-     "sf": 1,
-     "ws": "cross-off"
-    },
-    {
-     "d": "2026-11-14",
-     "t": "15:00",
-     "h": 1.4,
-     "sd": "NNW",
-     "p": 10,
-     "kj": 370,
-     "w": 20,
-     "wd": "NNE",
-     "sf": 1,
-     "ws": "cross-off"
-    },
-    {
-     "d": "2026-11-14",
-     "t": "18:00",
-     "h": 1.3,
-     "sd": "NNW",
-     "p": 10,
-     "kj": 349,
-     "w": 20,
-     "wd": "NNE",
-     "sf": 1,
-     "ws": "cross-off"
-    },
     {
      "d": "2026-11-15",
      "t": "06:00",
@@ -475,10 +319,10 @@
     {
      "d": "2026-11-15",
      "t": "12:00",
-     "h": 1,
+     "h": 0.9,
      "sd": "N",
      "p": 10,
-     "kj": 198,
+     "kj": 161,
      "w": 15,
      "wd": "NNE",
      "sf": 1,
@@ -528,7 +372,7 @@
      "p": 11,
      "kj": 103,
      "w": 15,
-     "wd": "NE",
+     "wd": "ENE",
      "sf": 2,
      "ws": "cross-off"
     },
@@ -539,7 +383,7 @@
      "sd": "WNW",
      "p": 10,
      "kj": 97,
-     "w": 15,
+     "w": 10,
      "wd": "NNE",
      "sf": 1,
      "ws": "cross-off"
@@ -564,8 +408,20 @@
      "p": 10,
      "kj": 130,
      "w": 20,
-     "wd": "NNE",
+     "wd": "N",
      "sf": 1,
+     "ws": "cross-off"
+    },
+    {
+     "d": "2026-11-17",
+     "t": "06:00",
+     "h": 1.4,
+     "sd": "NW",
+     "p": 11,
+     "kj": 408,
+     "w": 10,
+     "wd": "NE",
+     "sf": 2,
      "ws": "cross-off"
     }
    ]
@@ -573,30 +429,6 @@
  },
  "tides": {
   "corralejo": [
-   {
-    "d": "2026-11-14",
-    "t": "03:46",
-    "k": "H",
-    "m": 1.99
-   },
-   {
-    "d": "2026-11-14",
-    "t": "10:01",
-    "k": "L",
-    "m": 0.57
-   },
-   {
-    "d": "2026-11-14",
-    "t": "16:12",
-    "k": "H",
-    "m": 1.73
-   },
-   {
-    "d": "2026-11-14",
-    "t": "22:04",
-    "k": "L",
-    "m": 0.67
-   },
    {
     "d": "2026-11-15",
     "t": "04:31",
@@ -662,39 +494,39 @@
     "t": "19:24",
     "k": "H",
     "m": 1.56
+   },
+   {
+    "d": "2026-11-18",
+    "t": "01:16",
+    "k": "L",
+    "m": 0.89
+   },
+   {
+    "d": "2026-11-18",
+    "t": "07:44",
+    "k": "H",
+    "m": 1.76
+   },
+   {
+    "d": "2026-11-18",
+    "t": "14:18",
+    "k": "L",
+    "m": 0.74
+   },
+   {
+    "d": "2026-11-18",
+    "t": "20:36",
+    "k": "H",
+    "m": 1.65
    }
   ],
   "cotillo": [
    {
-    "d": "2026-11-14",
-    "t": "03:46",
-    "k": "H",
-    "m": 1.99,
-    "est": true
-   },
-   {
-    "d": "2026-11-14",
-    "t": "10:02",
-    "k": "L",
-    "m": 0.56
-   },
-   {
-    "d": "2026-11-14",
-    "t": "16:12",
-    "k": "H",
-    "m": 1.71
-   },
-   {
-    "d": "2026-11-14",
-    "t": "22:04",
-    "k": "L",
-    "m": 0.66
-   },
-   {
     "d": "2026-11-15",
     "t": "04:31",
     "k": "H",
-    "m": 1.86
+    "m": 1.89,
+    "est": true
    },
    {
     "d": "2026-11-15",
@@ -755,6 +587,30 @@
     "t": "19:23",
     "k": "H",
     "m": 1.54
+   },
+   {
+    "d": "2026-11-18",
+    "t": "01:15",
+    "k": "L",
+    "m": 0.87
+   },
+   {
+    "d": "2026-11-18",
+    "t": "07:43",
+    "k": "H",
+    "m": 1.73
+   },
+   {
+    "d": "2026-11-18",
+    "t": "14:17",
+    "k": "L",
+    "m": 0.72
+   },
+   {
+    "d": "2026-11-18",
+    "t": "20:35",
+    "k": "H",
+    "m": 1.62
    }
   ]
  },
